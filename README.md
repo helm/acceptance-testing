@@ -1,5 +1,7 @@
 # Helm Acceptance Tests
 
+*Note: these tests have only been run against Helm 3 ([dev-v3](https://github.com/helm/helm/tree/dev-v3))*
+
 This repo contains the source for Helm acceptance tests.
 
 The tests are written using [Robot Framework](https://robotframework.org/).

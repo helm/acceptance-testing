@@ -32,6 +32,9 @@ ROBOT_TEST_ROOT_DIR="${ROBOT_TEST_ROOT_DIR:-${PWD}}"
 #   - fresh Helm Home at .acceptance/.helm/
 #   - Python virtualenv at .acceptance/.venv/ (cached if already fetched)
 #
+if [ ! -z "${ROBOT_HELM_PATH}" ]; then
+   export PATH="${ROBOT_HELM_PATH}:${PATH}"
+fi
 export PATH="${VENV_DIR}/bin:${PATH}"
 export HELM_HOME="${ROBOT_OUTPUT_DIR}/.helm"
 rm -rf ${HELM_HOME} && mkdir -p ${HELM_HOME}

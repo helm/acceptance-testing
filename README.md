@@ -25,6 +25,12 @@ From the root of this repo, run the following:
 make acceptance
 ```
 
+Note: by default, the tests will use helm as found on your PATH.
+To specify a different helm to test, set and export the `ROBOT_HELM_PATH`
+environment variable.  For example, if you have helm v2 installed, but want
+to test helm v3 which is located elsewhere; or if you have helm installed
+but want to test a different development version of helm.
+
 ## Viewing the results
 
 Robot creates an HTML test report describing test successes/failures.

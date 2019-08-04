@@ -22,7 +22,7 @@ cd $DIR/../
 
 # Acceptance test configurables
 ROBOT_PY_REQUIRES="${ROBOT_PY_REQUIRES:-robotframework==3.1.2}"
-ROBOT_OUTPUT_DIR="${ROBOT_DIR:-${PWD}/.acceptance}"
+ROBOT_OUTPUT_DIR="${ROBOT_OUTPUT_DIR:-${PWD}/.acceptance}"
 ROBOT_HELM_HOME_DIR="${ROBOT_HELM_HOME_DIR:-${ROBOT_OUTPUT_DIR}/.helm}"
 ROBOT_VENV_DIR="${ROBOT_VENV_DIR:-${ROBOT_OUTPUT_DIR}/.venv}"
 ROBOT_TEST_ROOT_DIR="${ROBOT_TEST_ROOT_DIR:-${PWD}}"
@@ -33,7 +33,7 @@ ROBOT_TEST_ROOT_DIR="${ROBOT_TEST_ROOT_DIR:-${PWD}}"
 #   - Python virtualenv at .acceptance/.venv/ (cached if already fetched)
 #
 export PATH="${VENV_DIR}/bin:${PATH}"
-export HELM_HOME="${ROBOT_OUTPUT_DIR}/.helm"
+export HELM_HOME="${ROBOT_HELM_HOME_DIR}"
 rm -rf ${HELM_HOME} && mkdir -p ${HELM_HOME}
 helm init
 if [[ ! -d ${ROBOT_VENV_DIR} ]]; then

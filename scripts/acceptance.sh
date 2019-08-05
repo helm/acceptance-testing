@@ -40,7 +40,7 @@ ROBOT_RUN_TESTS="${ROBOT_RUN_TESTS/,/ }"
 if [ ! -z "${ROBOT_HELM_PATH}" ]; then
    export PATH="${ROBOT_HELM_PATH}:${PATH}"
 fi
-export PATH="${VENV_DIR}/bin:${PATH}"
+export PATH="${ROBOT_VENV_DIR}/bin:${PATH}"
 export HELM_HOME="${ROBOT_HELM_HOME_DIR}"
 rm -rf ${HELM_HOME} && mkdir -p ${HELM_HOME}
 

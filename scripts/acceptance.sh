@@ -57,7 +57,7 @@ rm -rf ${HELM_HOME} && mkdir -p ${HELM_HOME}
 # command will try to setup tiller on whatever cluster the user
 # is currently pointing to since we haven't setup the kind cluster yet.
 set +x
-if helm version -c > /dev/null; then
+if helm version -c &> /dev/null; then
     echo "Helm v2 not supported yet!"
     echo "Please set the ROBOT_HELM_PATH environment variable" \
          "to the directory where the helm v3 to test can be found."

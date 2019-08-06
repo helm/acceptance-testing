@@ -31,6 +31,26 @@ environment variable.  For example, if you have helm v2 installed, but want
 to test helm v3 which is located elsewhere; or if you have helm installed
 but want to test a different development version of helm.
 
+### Selecting which test suites to execute
+
+By default `make acceptance` will run every test suite (`*.robot` file) present in the directory specified in the environment variable `ROBOT_TEST_ROOT_DIR`.  You can instead specify which test suites to run by setting and exporting variable `ROBOT_RUN_TESTS`.
+
+For example, to only run the `shells.robot` suite:
+
+```
+ROBOT_RUN_TESTS=shells.robot
+make acceptance
+```
+
+To specify multiple test suites you can set `ROBOT_RUN_TESTS` to a comma-separated, or space-separated list.  For example:
+
+```
+ROBOT_RUN_TESTS=shells.robot,kubernetes_versions.robot
+make acceptance
+```
+
+You can use the list format of `ROBOT_RUN_TESTS` as a way to specify the order in which the test suites should be run.  By default (when `ROBOT_RUN_TESTS` is not specified), the test suites are run in alphabetical order.
+
 ## Viewing the results
 
 Robot creates an HTML test report describing test successes/failures.

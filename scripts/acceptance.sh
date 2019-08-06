@@ -27,6 +27,11 @@ ROBOT_HELM_HOME_DIR="${ROBOT_HELM_HOME_DIR:-${ROBOT_OUTPUT_DIR}/.helm}"
 ROBOT_VENV_DIR="${ROBOT_VENV_DIR:-${ROBOT_OUTPUT_DIR}/.venv}"
 ROBOT_TEST_ROOT_DIR="${ROBOT_TEST_ROOT_DIR:-${PWD}}"
 
+# Allow to specify which test suites to run
+ROBOT_RUN_TESTS="${ROBOT_RUN_TESTS:-${ROBOT_TEST_ROOT_DIR}}"
+# Allow for a comma-separated list
+ROBOT_RUN_TESTS="${ROBOT_RUN_TESTS/,/ }"
+
 # Setup acceptance test environment:
 #
 #   - fresh Helm Home at .acceptance/.helm/
@@ -67,4 +72,4 @@ if [[ ! -d ${ROBOT_VENV_DIR} ]]; then
 fi
 
 # Run Robot Framework, output
-robot --outputdir=${ROBOT_OUTPUT_DIR} ${ROBOT_TEST_ROOT_DIR}
+robot --outputdir=${ROBOT_OUTPUT_DIR} ${ROBOT_RUN_TESTS}

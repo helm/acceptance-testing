@@ -17,7 +17,7 @@
 # This script tests different scenarios of completion.  The tests can be
 # run by sourcing this file from a bash shell or a zsh shell.
 
-source /tmp/completion-tests/lib/completionTests-base.sh
+source /tmp/helm-acceptance-shell-completion-tests/lib/completionTests-base.sh
 
 # Don't use the new source <() form as it does not work with bash v3
 source /dev/stdin <<- EOF
@@ -33,8 +33,8 @@ EOF
 _completionTests_verifyCompletion "helm stat" "status"
 _completionTests_verifyCompletion "helm status" "status"
 _completionTests_verifyCompletion "helm lis" "list"
-_completionTests_verifyCompletion "helm r" "registry repo rollback"
-_completionTests_verifyCompletion "helm re" "registry repo"
+_completionTests_verifyCompletion "helm r" "repo rollback"
+_completionTests_verifyCompletion "helm re" "repo"
 
 # Basic second level commands (static completion)
 _completionTests_verifyCompletion "helm get " "hooks manifest values"

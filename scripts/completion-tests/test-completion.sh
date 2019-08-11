@@ -19,6 +19,9 @@
 # Fail as soon as there is an error
 set -e
 
+# Debug
+set -x
+
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 BINARY_NAME=helm
@@ -30,13 +33,21 @@ if [ -z $(which docker) ]; then
   exit 2;
 fi
 
-COMP_DIR=/tmp/completion-tests
+COMP_DIR=/tmp/helm-acceptance-shell-completion-tests
+
 COMP_SCRIPT_NAME=completionTests.sh
 COMP_SCRIPT=${COMP_DIR}/${COMP_SCRIPT_NAME}
 
+rm -rf ${COMP_DIR}
 mkdir -p ${COMP_DIR}/lib
 cp ${SCRIPT_DIR}/${COMP_SCRIPT_NAME} ${COMP_DIR}
 cp ${SCRIPT_DIR}/lib/completionTests-base.sh ${COMP_DIR}/lib
+
+if ! [ -f ${BINARY_PATH_DOCKER}/${BINARY_NAME} ]; then
+    echo "These tests require a helm binary located at ${BINARY_PATH_DOCKER}/${BINARY_NAME}"
+    echo "Hint: Run 'make build-cross' in a clone of helm repo"
+    exit 2
+fi
 cp ${BINARY_PATH_DOCKER}/${BINARY_NAME} ${COMP_DIR}
 
 # Now run all tests, even if there is a failure

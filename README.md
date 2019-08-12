@@ -11,8 +11,8 @@ The tests are written using [Robot Framework](https://robotframework.org/).
 The following tools/commands are expected to be present on the base system
 prior to running the tests:
 
-- [Go](https://golang.org/dl/)
-- [Docker](https://hub.docker.com/signup)
+- [go](https://golang.org/dl/)
+- [docker](https://hub.docker.com/signup)
 - [kind](https://kind.sigs.k8s.io/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [python3](https://www.python.org/downloads/)

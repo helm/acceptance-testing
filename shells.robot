@@ -24,8 +24,4 @@ Library           lib/Completion.py
 
 *** Test Cases ***
 Helm shell completion works
-    Test Helm shell completion
-
-*** Keyword ***
-Test Helm shell completion
     Completion.Run all completion tests

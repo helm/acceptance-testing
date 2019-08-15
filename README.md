@@ -55,10 +55,16 @@ You can use the list format of `ROBOT_RUN_TESTS` as a way to specify the order i
 
 Robot creates an HTML test report describing test successes/failures.
 
-To view the report, runt the following:
+To view the report, run the following:
+####For Mac+Linux:
 
 ```
 open .acceptance/report.html
+```
+
+####For Windows:
+```
+start chrome .acceptance/report.html
 ```
 
 Note: by default, the tests will output to the `.acceptance/` directory.

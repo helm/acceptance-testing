@@ -41,8 +41,11 @@ if [ ! -z "${ROBOT_HELM_PATH}" ]; then
    export PATH="${ROBOT_HELM_PATH}:${PATH}"
 fi
 export PATH="${ROBOT_VENV_DIR}/bin:${PATH}"
-export HELM_HOME="${ROBOT_HELM_HOME_DIR}"
-rm -rf ${HELM_HOME} && mkdir -p ${HELM_HOME}
+
+rm -rf ${ROBOT_HELM_HOME_DIR}
+export XDG_CACHE_HOME=${ROBOT_HELM_HOME_DIR}/cache && mkdir -p ${XDG_CACHE_HOME}
+export XDG_CONFIG_HOME=${ROBOT_HELM_HOME_DIR}/config && mkdir -p ${XDG_CONFIG_HOME}
+export XDG_DATA_HOME=${ROBOT_HELM_HOME_DIR}/data && mkdir -p ${XDG_DATA_HOME}
 
 # We only support helm v3 at this time.
 # To figure out which version of helm is used, we run 'helm version'

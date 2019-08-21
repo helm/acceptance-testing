@@ -24,6 +24,63 @@ source /dev/stdin <<- EOF
    $(helm completion $SHELL_TYPE)
 EOF
 
+# Helm setup
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-/tmp/helm/cache} && mkdir -p ${XDG_CACHE_HOME}
+export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-/tmp/helm/config} && mkdir -p ${XDG_CONFIG_HOME}
+export XDG_DATA_HOME=${XDG_DATA_HOME:-/tmp/helm/data} && mkdir -p ${XDG_DATA_HOME}
+
+helm init
+
+# Setup some repos to allow testing completion of the helm repo command
+# We inject the content of the repositories.yaml file directly to avoid requiring
+# an internet connection if we were to use 'helm repo add'
+cat > ${XDG_CONFIG_HOME}/helm/repositories.yaml << EOF
+apiVersion: v1
+generated: "2019-08-11T22:28:44.841141-04:00"
+repositories:
+- name: stable
+  url: https://kubernetes-charts.storage.googleapis.com
+- name: test1
+  url: https://charts.example.com
+- name: test2
+  url: https://charts2.example.com
+EOF
+helm repo list
+
+# Setup some plugins to allow testing completion of the helm plugin command
+# We inject the content of different plugin.yaml files directly to avoid having
+# to install a real plugin which can take a long time.
+PLUGIN_ROOT=${XDG_DATA_HOME}/helm/plugins
+
+PLUGIN_DIR=${PLUGIN_ROOT}/helm-template
+mkdir -p ${PLUGIN_DIR}
+cat > ${PLUGIN_DIR}/plugin.yaml << EOF
+name: "template"
+version: "2.5.1+2"
+description: "Render templates on the local client."
+EOF
+
+PLUGIN_DIR=${PLUGIN_ROOT}/helm-push
+mkdir -p ${PLUGIN_DIR}
+cat > ${PLUGIN_DIR}/plugin.yaml << EOF
+name: "push"
+version: "0.7.1"
+description: "Push chart package to ChartMuseum"
+EOF
+
+PLUGIN_DIR=${PLUGIN_ROOT}/helm-push-artifactory
+mkdir -p ${PLUGIN_DIR}
+cat > ${PLUGIN_DIR}/plugin.yaml << EOF
+name: "push-artifactory"
+version: "0.3.0"
+description: "Push helm charts to artifactory"
+EOF
+helm plugin list
+
+#####################
+# Static completions
+#####################
+
 # No need to test every command, as completion is handled
 # automatically by Cobra.
 # We focus on some smoke tests for the Cobra-handled completion
@@ -62,3 +119,17 @@ _completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"
 # Does not work.
 #_completionTests_verifyCompletion KFAIL "helm ls" "ls"
 #_completionTests_verifyCompletion KFAIL "helm dependenci" "dependencies"
+
+#####################
+# Dynamic completions
+#####################
+
+# For the repo command
+_completionTests_verifyCompletion "helm repo remove " "stable test1 test2"
+_completionTests_verifyCompletion "helm repo remove test" "test1 test2"
+
+# For the plugin command
+_completionTests_verifyCompletion "helm plugin remove " "template push push-artifactory"
+_completionTests_verifyCompletion "helm plugin remove pu" "push push-artifactory"
+_completionTests_verifyCompletion "helm plugin update " "template push push-artifactory"
+_completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"

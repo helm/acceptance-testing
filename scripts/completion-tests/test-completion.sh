@@ -25,8 +25,9 @@ set -x
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 BINARY_NAME=helm
-BINARY_PATH_DOCKER=${SCRIPT_DIR}/../../../helm/_dist/linux-amd64
-BINARY_PATH_LOCAL=${SCRIPT_DIR}/../../../helm/bin
+BINARY_ROOT=${ROBOT_HELM_PATH:-${SCRIPT_DIR}/../../../helm/bin}
+BINARY_PATH_DOCKER=${BINARY_ROOT}/../_dist/linux-amd64
+BINARY_PATH_LOCAL=${BINARY_ROOT}
 
 if [ -z $(which docker) ]; then
   echo "Missing 'docker' client which is required for these tests";

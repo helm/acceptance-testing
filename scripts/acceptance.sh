@@ -55,10 +55,6 @@ export XDG_DATA_HOME=${ROBOT_HELM_HOME_DIR}/data && mkdir -p ${XDG_DATA_HOME}
 # we end up on helm v2 and we don't have that flag, it will try to
 # contact the cluster, which may not be accessible, and the command
 # will timeout.
-#
-# It is important not to run with helm v2 or else the 'helm init'
-# command will try to setup tiller on whatever cluster the user
-# is currently pointing to since we haven't setup the kind cluster yet.
 set +x
 if helm version -c &> /dev/null; then
     echo "Helm v2 not supported yet!"
@@ -68,7 +64,6 @@ if helm version -c &> /dev/null; then
 fi
 set -x
 
-helm init
 if [[ ! -d ${ROBOT_VENV_DIR} ]]; then
     virtualenv -p $(which python3) ${ROBOT_VENV_DIR}
     pip install ${ROBOT_PY_REQUIRES}

@@ -29,8 +29,6 @@ export XDG_CACHE_HOME=${XDG_CACHE_HOME:-/tmp/helm/cache} && mkdir -p ${XDG_CACHE
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-/tmp/helm/config} && mkdir -p ${XDG_CONFIG_HOME}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-/tmp/helm/data} && mkdir -p ${XDG_DATA_HOME}
 
-helm init
-
 # Setup some repos to allow testing completion of the helm repo command
 # We inject the content of the repositories.yaml file directly to avoid requiring
 # an internet connection if we were to use 'helm repo add'

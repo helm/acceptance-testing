@@ -26,7 +26,8 @@ Helm works with Kubernetes 1.15.0
 
 *** Keyword ***
 Test Helm on Kubernetes version
-    Environment Variable Should Be Set  ROBOT_HELM_V3  Helm v2 not supported. Skipping test.
+    ${helm_version} =  Get Environment Variable  ROBOT_HELM_V3  "v2"
+    Pass Execution If  ${helm_version} == 'v2'  Helm v2 not supported. Skipping test.
 
     [Arguments]    ${kube_version}
     Create test cluster with kube version    ${kube_version}

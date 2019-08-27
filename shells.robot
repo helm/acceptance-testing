@@ -26,6 +26,7 @@ Library           lib/Completion.py
 
 *** Test Cases ***
 Helm shell completion works
-    Environment Variable Should Be Set  ROBOT_HELM_V3  Helm v2 not supported. Skipping test.
+    ${helm_version} =  Get Environment Variable  ROBOT_HELM_V3  "v2"
+    Pass Execution If  ${helm_version} == 'v2'  Helm v2 not supported. Skipping test.
 
     Completion.Run all completion tests

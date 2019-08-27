@@ -10,6 +10,7 @@ Documentation     Verify Helm functionality on multiple Kubernetes versions.
 ...                  export KIND_CLUSTER_1_15_0="helm-ac-keepalive-1.15.0"
 ...
 Library           String
+Library           OperatingSystem
 Library           lib/Kind.py
 Library           lib/Kubectl.py
 Library           lib/Helm.py
@@ -25,6 +26,8 @@ Helm works with Kubernetes 1.15.0
 
 *** Keyword ***
 Test Helm on Kubernetes version
+    Environment Variable Should Be Set  ROBOT_HELM_V3  Helm v2 not supported. Skipping test.
+
     [Arguments]    ${kube_version}
     Create test cluster with kube version    ${kube_version}
 

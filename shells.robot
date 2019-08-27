@@ -21,8 +21,11 @@ Documentation     Verify Helm functionality on multiple shells.
 ...               Tests on MacOS will be run if the host running the tests
 ...               is MacOS and has the necessary setup (bash completion and/or zsh)
 ...
+Library           OperatingSystem
 Library           lib/Completion.py
 
 *** Test Cases ***
 Helm shell completion works
+    Environment Variable Should Be Set  ROBOT_HELM_V3  Helm v2 not supported. Skipping test.
+
     Completion.Run all completion tests

@@ -69,6 +69,7 @@ docker build -t ${BASH4_IMAGE} - <<- EOF
 EOF
 docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
+           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            ${BASH4_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -90,6 +91,7 @@ EOF
 docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
            -e BASH_COMPLETION=/usr/share/bash-completion \
+           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -103,6 +105,7 @@ docker build -t ${ZSH_IMAGE} - <<- EOF
 EOF
 docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
+           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -118,6 +121,7 @@ docker build -t ${ZSH_IMAGE} - <<- EOF
 EOF
 docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
+           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################

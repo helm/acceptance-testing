@@ -23,6 +23,7 @@ cd $DIR/../
 # We force the tests to use a directory of our own choosing
 # to make sure that when we wipe it clean, we don't wipe
 # some directory that was important to the user.
+# Don't use .helm as it may collide with a valid directory
 FINAL_DIR_NAME=".helm_acceptance_tests"
 
 # Acceptance test configurables

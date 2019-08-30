@@ -51,8 +51,11 @@ if ! [ -f ${BINARY_PATH_DOCKER}/${BINARY_NAME} ]; then
 fi
 cp ${BINARY_PATH_DOCKER}/${BINARY_NAME} ${COMP_DIR}
 
-# Now run all tests, even if there is a failure
+# Now run all tests, even if there is a failure.
+# But remember if there was any failure to report it at the end.
 set +e
+GOT_FAILURE=0
+trap "GOT_FAILURE=1" ERR
 
 ########################################
 # Bash 4 completion tests
@@ -134,3 +137,6 @@ if [ "$(uname)" == "Darwin" ]; then
       PATH=${BINARY_PATH_LOCAL}:$PATH zsh -c "source ${COMP_SCRIPT}"
    fi
 fi
+
+# Indicate if anything failed during the run
+exit ${GOT_FAILURE}

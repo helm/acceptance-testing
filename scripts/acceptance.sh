@@ -47,20 +47,25 @@ export XDG_CACHE_HOME=${ROBOT_HELM_HOME_DIR}/cache && mkdir -p ${XDG_CACHE_HOME}
 export XDG_CONFIG_HOME=${ROBOT_HELM_HOME_DIR}/config && mkdir -p ${XDG_CONFIG_HOME}
 export XDG_DATA_HOME=${ROBOT_HELM_HOME_DIR}/data && mkdir -p ${XDG_DATA_HOME}
 
-# We only support helm v3 at this time.
+# We fully support helm v3 and partially support helm v2 at this time.
 # To figure out which version of helm is used, we run 'helm version'
 # with the -c flag which is only supported in helm v2; if we get an
 # error, it means we are running helm v3, if we don't get an error,
-# it's helm v2 and we abort. We want to use the -c flag because if
+# it's helm v2. We want to use the -c flag because if
 # we end up on helm v2 and we don't have that flag, it will try to
 # contact the cluster, which may not be accessible, and the command
 # will timeout.
 set +x
 if helm version -c &> /dev/null; then
-    echo "Helm v2 not supported yet!"
-    echo "Please set the ROBOT_HELM_PATH environment variable" \
-         "to the directory where the helm v3 to test can be found."
-    exit 1
+    echo "===================="
+    echo "Running with Helm v2"
+    echo "===================="
+    unset ROBOT_HELM_V3
+else
+    echo "===================="
+    echo "Running with Helm v3"
+    echo "===================="
+    export ROBOT_HELM_V3=1
 fi
 set -x
 

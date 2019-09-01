@@ -2,7 +2,7 @@ import os
 import common
 from Kind import kind_auth_wrap
 
-needs_cluster = True
+needs_cluster = False
 
 class Sh(common.CommandRunner):
     def require_cluster(self, require):

@@ -18,10 +18,10 @@ class Sh(common.CommandRunner):
     def Run(self, cmd):
         self.run_command(self.wrap(cmd))
 
-    def Pass(self, cmd):
+    def should_pass(self, cmd):
         self.Run(cmd)
         self.return_code_should_be(0)
 
-    def Fail(self, cmd):
+    def should_fail(self, cmd):
         self.Run(cmd)
         self.return_code_should_not_be(0)

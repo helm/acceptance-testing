@@ -22,7 +22,7 @@ Documentation     Verify Helm functionality on multiple shells.
 ...               is MacOS and has the necessary setup (bash completion and/or zsh)
 ...
 Library           OperatingSystem
-Library           lib/Completion.py
+Library           ../lib/Completion.py
 
 *** Test Cases ***
 Helm shell completion works

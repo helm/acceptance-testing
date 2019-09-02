@@ -16,7 +16,7 @@
 *** Settings ***
 Documentation     Verify helm repo commands work as expected.
 ...
-Library           lib/Sh.py
+Library           ../lib/Sh.py
 
 *** Test Cases ***
 No repos provisioned yet

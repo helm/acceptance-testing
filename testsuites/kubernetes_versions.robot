@@ -11,9 +11,9 @@ Documentation     Verify Helm functionality on multiple Kubernetes versions.
 ...
 Library           String
 Library           OperatingSystem
-Library           lib/Kind.py
-Library           lib/Kubectl.py
-Library           lib/Helm.py
+Library           ../lib/Kind.py
+Library           ../lib/Kubectl.py
+Library           ../lib/Helm.py
 Suite Setup       Suite Setup
 Suite Teardown    Suite Teardown
 

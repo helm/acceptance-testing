@@ -125,6 +125,21 @@ docker run --rm \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################
+# Zsh alpine/busybox completion tests
+# https://github.com/helm/helm/pull/6327
+########################################
+ZSH_IMAGE=completion-zsh-alpine
+
+echo;echo;
+docker build -t ${ZSH_IMAGE} - <<- EOF
+   FROM alpine
+   RUN apk update && apk add zsh
+EOF
+docker run --rm \
+           -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
+           ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
+
+########################################
 # MacOS completion tests
 ########################################
 # Since we can't use Docker to test MacOS,

@@ -32,6 +32,7 @@ export XDG_DATA_HOME=${XDG_DATA_HOME:-/tmp/helm/data} && mkdir -p ${XDG_DATA_HOM
 # Setup some repos to allow testing completion of the helm repo command
 # We inject the content of the repositories.yaml file directly to avoid requiring
 # an internet connection if we were to use 'helm repo add'
+mkdir -p ${XDG_CONFIG_HOME}/helm
 cat > ${XDG_CONFIG_HOME}/helm/repositories.yaml << EOF
 apiVersion: v1
 generated: "2019-08-11T22:28:44.841141-04:00"

@@ -32,10 +32,13 @@ ROBOT_OUTPUT_DIR="${ROBOT_OUTPUT_DIR:-${PWD}/.acceptance}"
 ROBOT_HELM_HOME_DIR="${ROBOT_HELM_HOME_DIR:-${ROBOT_OUTPUT_DIR}}/${FINAL_DIR_NAME}"
 ROBOT_VENV_DIR="${ROBOT_VENV_DIR:-${ROBOT_OUTPUT_DIR}/.venv}"
 
-# Allow to specify which test suites to run
-ROBOT_RUN_TESTS="testsuites/${ROBOT_RUN_TESTS:-}"
-# Allow for a comma-separated list
-ROBOT_RUN_TESTS="${ROBOT_RUN_TESTS/,/ }"
+SUITES_TO_RUN=""
+# Allow to specify which test suites to run in a space-separated or comma-separated list
+for suite in ${ROBOT_RUN_TESTS/,/ }; do
+   SUITES_TO_RUN+="testsuites/${suite} "
+done
+# If no suites was specified, default to all
+SUITES_TO_RUN=${SUITES_TO_RUN:-testsuites}
 
 # Setup acceptance test environment:
 #
@@ -91,4 +94,4 @@ if [[ ! -d ${ROBOT_VENV_DIR} ]]; then
 fi
 
 # Run Robot Framework, output
-robot --outputdir=${ROBOT_OUTPUT_DIR} ${ROBOT_RUN_TESTS}
+robot --outputdir=${ROBOT_OUTPUT_DIR} ${SUITES_TO_RUN}

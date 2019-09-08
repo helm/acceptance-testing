@@ -120,24 +120,20 @@ _completionTests_verifyCompletion "helm completion z" "zsh"
 # Completion of flags
 _completionTests_verifyCompletion ZFAIL "helm --kube-con" "--kube-context= --kube-context"
 _completionTests_verifyCompletion ZFAIL "helm --kubecon" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion ZFAIL "helm --name" "--namespace= --namespace"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm -v" "-v"
+    _completionTests_verifyCompletion ZFAIL "helm --v" "--v= --vmodule= --v --vmodule"
+    _completionTests_verifyCompletion ZFAIL "helm --name" "--namespace= --namespace"
 fi
-_completionTests_verifyCompletion ZFAIL "helm --v" "--v= --vmodule= --v --vmodule"
 
 # Completion of commands while using flags
 _completionTests_verifyCompletion "helm --kube-context prod sta" "status"
-_completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"
-_completionTests_verifyCompletion KFAIL "helm -v get " "hooks manifest values"
 _completionTests_verifyCompletion ZFAIL "helm --kubeconfig=/tmp/config lis" "list"
-_completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"
-_completionTests_verifyCompletion ZFAIL "helm get --name" "--namespace= --namespace"
 _completionTests_verifyCompletion ZFAIL "helm get hooks --kubec" "--kubeconfig= --kubeconfig"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
-   _completionTests_verifyCompletion KFAIL "helm -v get " "hooks manifest values"
-else
-   _completionTests_verifyCompletion KFAIL "helm -v get " "hooks manifest notes values"
+    _completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"
+    _completionTests_verifyCompletion KFAIL "helm -v get " "hooks manifest values"
+    _completionTests_verifyCompletion ZFAIL "helm get --name" "--namespace= --namespace"
 fi
 
 # Alias completion

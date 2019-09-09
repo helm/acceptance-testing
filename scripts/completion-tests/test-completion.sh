@@ -18,11 +18,9 @@
 
 # Fail as soon as there is an error
 set -e
-
-# Debug
-set -x
-
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+
+set_shell_debug_level 2
 
 BINARY_NAME=helm
 BINARY_ROOT=${ROBOT_HELM_PATH:-${SCRIPT_DIR}/../../../helm/bin}
@@ -70,6 +68,7 @@ EOF
 docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            ${BASH4_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -92,6 +91,7 @@ docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
            -e BASH_COMPLETION=/usr/share/bash-completion \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -106,6 +106,7 @@ EOF
 docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -122,6 +123,7 @@ EOF
 docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################

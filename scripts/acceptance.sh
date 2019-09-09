@@ -1,5 +1,24 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
+# Turn on debug printouts if the user requested a debug level >= $1
+set_shell_debug_level()
+{
+    set +x
+    if [ $ROBOT_DEBUG_LEVEL -ge $1 ]; then
+       set -x
+    fi
+}
+export -f set_shell_debug_level
+
+export ROBOT_DEBUG_LEVEL="${ROBOT_DEBUG_LEVEL:-0}"
+if [ ${ROBOT_DEBUG_LEVEL} -lt 0 ] || [ ${ROBOT_DEBUG_LEVEL} -gt 3 ]; then
+   echo "If set, ROBOT_DEBUG_LEVEL must be between 0 and 3."
+   echo "0 - None, 1 - Low, 2 - Medium, 3 - High"
+   echo "Currently ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL}"
+   exit 1
+fi
+
+set_shell_debug_level 2
 REQUIRED_SYSTEM_COMMANDS=(
     "kind"
     "kubectl"
@@ -8,15 +27,15 @@ REQUIRED_SYSTEM_COMMANDS=(
     "virtualenv"
 )
 
-set +x
+set_shell_debug_level 3
 for C in ${REQUIRED_SYSTEM_COMMANDS[@]}; do
     if [[ ! -x "$(command -v ${C})" ]]; then
         echo "System command missing: $C"
         exit 1
     fi
 done
-set -x
 
+set_shell_debug_level 2
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR/../
 
@@ -47,7 +66,7 @@ if [ ! -z "${ROBOT_HELM_PATH}" ]; then
 fi
 export PATH="${ROBOT_VENV_DIR}/bin:${PATH}"
 
-set +x
+set_shell_debug_level 3
 # A bit of safety before wiping the entire directory
 if [ $(basename ${ROBOT_HELM_HOME_DIR}) == "${FINAL_DIR_NAME}" ]; then
     rm -rf ${ROBOT_HELM_HOME_DIR}
@@ -57,7 +76,7 @@ else
     echo "Please report a bug at https://github.com/helm/acceptance-testing/issues"
     exit 1
 fi
-set -x
+set_shell_debug_level 2
 
 export XDG_CACHE_HOME=${ROBOT_HELM_HOME_DIR}/cache && mkdir -p ${XDG_CACHE_HOME}
 export XDG_CONFIG_HOME=${ROBOT_HELM_HOME_DIR}/config && mkdir -p ${XDG_CONFIG_HOME}
@@ -71,7 +90,7 @@ export XDG_DATA_HOME=${ROBOT_HELM_HOME_DIR}/data && mkdir -p ${XDG_DATA_HOME}
 # we end up on helm v2 and we don't have that flag, it will try to
 # contact the cluster, which may not be accessible, and the command
 # will timeout.
-set +x
+set_shell_debug_level 3
 if helm version -c &> /dev/null; then
     echo "===================="
     echo "Running with Helm v2"
@@ -83,8 +102,8 @@ else
     echo "===================="
     export ROBOT_HELM_V3=1
 fi
-set -x
 
+set_shell_debug_level 2
 if [[ ! -d ${ROBOT_VENV_DIR} ]]; then
     virtualenv -p $(which python3) ${ROBOT_VENV_DIR}
     pip install ${ROBOT_PY_REQUIRES}

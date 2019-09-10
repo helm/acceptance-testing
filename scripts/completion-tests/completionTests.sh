@@ -19,6 +19,8 @@
 
 source /tmp/helm-acceptance-shell-completion-tests/lib/completionTests-base.sh
 
+export PATH=/tmp/helm-acceptance-shell-completion-tests/bin:$PATH
+
 # Don't use the new source <() form as it does not work with bash v3
 source /dev/stdin <<- EOF
    $(helm completion $SHELL_TYPE)

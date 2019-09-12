@@ -191,6 +191,121 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 fi
 
+##############################################################
+# Completion with helm called through an alias or using a path
+##############################################################
+
+# We want to specify a different helm for completion than the one
+# that is found on the PATH variable.
+# This is particularly valuable to check that dynamic completion
+# uses the correct location for helm.
+
+# Copy helm to a location that is not on PATH
+TMP_HELM_DIR=$(mktemp -d ${ROBOT_OUTPUT_DIR}/helm-acceptance-temp-bin.XXXXXX)
+trap "rm -rf ${TMP_HELM_DIR}" EXIT
+
+mkdir -p $TMP_HELM_DIR
+HELM_DIR=$(dirname $(which helm))
+cp $HELM_DIR/helm $TMP_HELM_DIR/helm
+# Create aliases to helm
+# This alias will be created after the variable is expanded
+alias helmAlias="${TMP_HELM_DIR}/helm"
+# This alias will be created without expanding the variable (because of single quotes)
+alias helmAliasWithVar='${TMP_HELM_DIR}/helm'
+
+# Hook these new aliases to the helm completion function.
+# Only bash needs this, zsh does it automatically.
+if [ $SHELL_TYPE == bash ]; then
+    complete -o default -F $(_completionTests_findCompletionFunction helm) helmAlias
+    complete -o default -F $(_completionTests_findCompletionFunction helm) helmAliasWithVar
+fi
+
+# Now make 'helm' unavailable to make sure it can't be used by
+# the dynamic completion, which should instead use the helm
+# specified in the completion call.
+alias helm=echo
+
+# Completion with normal alias
+_completionTests_verifyCompletion "helmAlias lis" "list"
+_completionTests_verifyCompletion "helmAlias completion z" "zsh"
+_completionTests_verifyCompletion ZFAIL "helmAlias --kubecon" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion ZFAIL "helmAlias get hooks --kubec" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion "helmAlias repo remove test" "test1 test2"
+_completionTests_verifyCompletion "helmAlias plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "helmAlias upgrade --kube-context d" "dev1 dev2"
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    _completionTests_verifyCompletion "helmAlias --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+fi
+
+# Completion with alias that contains a variable
+_completionTests_verifyCompletion "helmAliasWithVar lis" "list"
+_completionTests_verifyCompletion "helmAliasWithVar completion z" "zsh"
+_completionTests_verifyCompletion ZFAIL "helmAliasWithVar --kubecon" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion ZFAIL "helmAliasWithVar get hooks --kubec" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion "helmAliasWithVar repo remove test" "test1 test2"
+_completionTests_verifyCompletion "helmAliasWithVar plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "helmAliasWithVar upgrade --kube-context d" "dev1 dev2"
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    _completionTests_verifyCompletion "helmAliasWithVar --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+fi
+
+# Completion with absolute path
+_completionTests_verifyCompletion "$TMP_HELM_DIR/helm lis" "list"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/helm completion z" "zsh"
+_completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/helm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/helm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/helm upgrade --kube-context d" "dev1 dev2"
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+fi
+
+# Completion with relative path
+cd $TMP_HELM_DIR
+_completionTests_verifyCompletion "./helm lis" "list"
+_completionTests_verifyCompletion "./helm completion z" "zsh"
+_completionTests_verifyCompletion ZFAIL "./helm --kubecon" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion ZFAIL "./helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion "./helm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "./helm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "./helm upgrade --kube-context d" "dev1 dev2"
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    _completionTests_verifyCompletion "./helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+fi
+cd - >/dev/null
+
+# Completion with a different name for helm
+mv $TMP_HELM_DIR/helm $TMP_HELM_DIR/myhelm
+if [ $SHELL_TYPE == bash ]; then
+    complete -o default -F $(_completionTests_findCompletionFunction helm) myhelm
+fi
+_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm lis" "list"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm completion z" "zsh"
+_completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm upgrade --kube-context d" "dev1 dev2"
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+fi
+
+# Completion with a different name for helm that is on PATH
+mv $TMP_HELM_DIR/myhelm $HELM_DIR/myhelm
+_completionTests_verifyCompletion "myhelm lis" "list"
+_completionTests_verifyCompletion "myhelm completion z" "zsh"
+_completionTests_verifyCompletion ZFAIL "myhelm --kubecon" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion ZFAIL "myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
+_completionTests_verifyCompletion "myhelm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "myhelm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "myhelm upgrade --kube-context d" "dev1 dev2"
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    _completionTests_verifyCompletion "myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+fi
+
+unalias helm
+
 # This must be the last call.  It allows to exit with an exit code
 # that reflects the final status of all the tests.
 _completionTests_exit

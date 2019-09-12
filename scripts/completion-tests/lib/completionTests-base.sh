@@ -103,9 +103,11 @@ _completionTests_sort() {
 }
 
 # Find the completion function associated with the binary.
-# $1 is the name of the binary for which completion was triggered.
+# $1 is the first argument of the line to complete which allows
+# us to find the existing completion function name.
 _completionTests_findCompletionFunction() {
-    local out=($(complete -p $1))
+    binary=$(basename $1)
+    local out=($(complete -p $binary))
     local returnNext=0
     for i in ${out[@]}; do
        if [ $returnNext -eq 1 ]; then
@@ -163,6 +165,11 @@ if [ ! -z "$BASH_VERSION" ];then
    echo "===================================================="
    echo "Running completions tests on $(uname) with bash $BASH_VERSION"
    echo "===================================================="
+
+   # Enable aliases to work even though we are in a script (non-interactive shell).
+   # This allows to test completion with aliases.
+   # Only needed for bash, zsh does this automatically.
+   shopt -s expand_aliases
 
    bashCompletionScript="/usr/share/bash-completion/bash_completion"
    if [ $(uname) = "Darwin" ]; then

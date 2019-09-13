@@ -53,6 +53,7 @@ _completionTests_verifyCompletion() {
 
    local cmdLine=$1
    local expected=$2
+   local currentFailure=0
 
    result=$(_completionTests_complete "${cmdLine}")
 
@@ -69,6 +70,7 @@ _completionTests_verifyCompletion() {
            ([ $expectedFailure = "ZFAIL" ] && [ $SHELL_TYPE = "zsh" ]); then
       if [ "$result" = "$expected" ]; then
          _completionTests_TEST_FAILED=1
+         currentFailure=1
          echo "UNEXPECTED SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
       else
          echo "$expectedFailure: \"$cmdLine\" should complete to \"$expected\" but we got \"$resultOut\""
@@ -77,12 +79,11 @@ _completionTests_verifyCompletion() {
       echo "SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
    else
       _completionTests_TEST_FAILED=1
+      currentFailure=1
       echo "FAIL: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
    fi
 
-   # Return the global result each time.  This allows for the very last call to
-   # this method to return the correct success or failure code for the entire script
-   return $_completionTests_TEST_FAILED
+   return $currentFailure
 }
 
 _completionTests_disable_sort() {
@@ -136,6 +137,12 @@ _completionTests_complete() {
 
    # Return the result of the completion.
    echo "${COMPREPLY[@]}"
+}
+
+_completionTests_exit() {
+   # Return the global result each time.  This allows for the very last call to
+   # this method to return the correct success or failure code for the entire script
+   return $_completionTests_TEST_FAILED
 }
 
 # compopt, which is only available for bash 4, I believe,

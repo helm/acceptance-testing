@@ -154,3 +154,7 @@ _completionTests_verifyCompletion "helm plugin remove " "template push push-arti
 _completionTests_verifyCompletion "helm plugin remove pu" "push push-artifactory"
 _completionTests_verifyCompletion "helm plugin update " "template push push-artifactory"
 _completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"
+
+# This must be the last call.  It allows to exit with an exit code
+# that reflects the final status of all the tests.
+_completionTests_exit

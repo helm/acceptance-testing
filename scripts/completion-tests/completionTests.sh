@@ -175,3 +175,7 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm --kube-context mycontext --namespace " "braavos old-valyria yunkai"
     _completionTests_verifyCompletion "helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 fi
+
+# This must be the last call.  It allows to exit with an exit code
+# that reflects the final status of all the tests.
+_completionTests_exit

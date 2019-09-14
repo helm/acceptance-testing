@@ -39,6 +39,7 @@ COMP_SCRIPT=${COMP_DIR}/${COMP_SCRIPT_NAME}
 
 rm -rf ${COMP_DIR}
 mkdir -p ${COMP_DIR}/lib
+mkdir -p ${COMP_DIR}/bin
 cp ${SCRIPT_DIR}/${COMP_SCRIPT_NAME} ${COMP_DIR}
 cp ${SCRIPT_DIR}/lib/completionTests-base.sh ${COMP_DIR}/lib
 
@@ -47,7 +48,7 @@ if ! [ -f ${BINARY_PATH_DOCKER}/${BINARY_NAME} ]; then
     echo "Hint: Run 'make build-cross' in a clone of helm repo"
     exit 2
 fi
-cp ${BINARY_PATH_DOCKER}/${BINARY_NAME} ${COMP_DIR}
+cp ${BINARY_PATH_DOCKER}/${BINARY_NAME} ${COMP_DIR}/bin
 
 # Now run all tests, even if there is a failure.
 # But remember if there was any failure to report it at the end.
@@ -66,7 +67,7 @@ docker build -t ${BASH4_IMAGE} - <<- EOF
    RUN apk update && apk add bash-completion
 EOF
 docker run --rm \
-           -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
+           -v ${COMP_DIR}:${COMP_DIR} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            ${BASH4_IMAGE} bash -c "source ${COMP_SCRIPT}"
@@ -88,7 +89,7 @@ docker build -t ${BASH3_IMAGE} - <<- EOF
             tar xvz -C /usr/share/bash-completion --strip-components 1 bash-completion-1.3/bash_completion
 EOF
 docker run --rm \
-           -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
+           -v ${COMP_DIR}:${COMP_DIR} \
            -e BASH_COMPLETION=/usr/share/bash-completion \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
@@ -104,7 +105,7 @@ docker build -t ${ZSH_IMAGE} - <<- EOF
    FROM zshusers/zsh:5.7
 EOF
 docker run --rm \
-           -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
+           -v ${COMP_DIR}:${COMP_DIR} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
@@ -121,7 +122,7 @@ docker build -t ${ZSH_IMAGE} - <<- EOF
    RUN apk update && apk add zsh
 EOF
 docker run --rm \
-           -v ${COMP_DIR}:${COMP_DIR} -v ${COMP_DIR}/${BINARY_NAME}:/bin/${BINARY_NAME} \
+           -v ${COMP_DIR}:${COMP_DIR} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
@@ -137,25 +138,22 @@ if [ "$(uname)" == "Darwin" ]; then
    echo "Attempting local completion tests on Darwin"
    echo "===================================================="
 
-   # Make sure that for the local tests, the tests will find the newly
-   # built binary.  If for some reason the binary to test is not present
-   # the tests may use the default binary installed on localhost and we
-   # won't be testing the right thing.  So we check here.
-   if [ $(PATH=${BINARY_PATH_LOCAL}:$PATH which ${BINARY_NAME}) != ${BINARY_PATH_LOCAL}/${BINARY_NAME} ]; then
-      echo "Cannot find ${BINARY_NAME} under ${BINARY_PATH_LOCAL}/${BINARY_NAME} although it is what we need to test."
-      exit 1
+   # Copy the local helm to use
+   if ! cp ${BINARY_PATH_LOCAL}/${BINARY_NAME} ${COMP_DIR}/bin ; then
+       echo "Cannot find ${BINARY_NAME} under ${BINARY_PATH_LOCAL}/${BINARY_NAME} although it is what we need to test."
+       exit 1
    fi
 
    if which bash>/dev/null && [ -f /usr/local/etc/bash_completion ]; then
       echo;echo;
       echo "Completion tests for bash running locally"
-      PATH=${BINARY_PATH_LOCAL}:$PATH bash -c "source ${COMP_SCRIPT}"
+      bash -c "source ${COMP_SCRIPT}"
    fi
 
    if which zsh>/dev/null; then
       echo;echo;
       echo "Completion tests for zsh running locally"
-      PATH=${BINARY_PATH_LOCAL}:$PATH zsh -c "source ${COMP_SCRIPT}"
+      zsh -c "source ${COMP_SCRIPT}"
    fi
 fi
 

@@ -17,9 +17,9 @@
 # This script tests different scenarios of completion.  The tests can be
 # run by sourcing this file from a bash shell or a zsh shell.
 
-source /tmp/helm-acceptance-shell-completion-tests/lib/completionTests-base.sh
+source ${COMP_DIR}/lib/completionTests-base.sh
 
-export PATH=/tmp/helm-acceptance-shell-completion-tests/bin:$PATH
+export PATH=${COMP_DIR}/bin:$PATH
 
 # Don't use the new source <() form as it does not work with bash v3
 source /dev/stdin <<- EOF
@@ -27,16 +27,15 @@ source /dev/stdin <<- EOF
 EOF
 
 # Helm setup
-HELM_ROOT=/tmp/helm-acceptance-tests-helm-config
 if [ ! -z ${ROBOT_HELM_V3} ]; then
-    export XDG_CACHE_HOME=${XDG_CACHE_HOME:-${HELM_ROOT}/cache} && mkdir -p ${XDG_CACHE_HOME}
-    export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HELM_ROOT}/config} && mkdir -p ${XDG_CONFIG_HOME}
-    export XDG_DATA_HOME=${XDG_DATA_HOME:-${HELM_ROOT}/data} && mkdir -p ${XDG_DATA_HOME}
+    export XDG_CACHE_HOME=${COMP_DIR}/cache && rm -rf ${XDG_CACHE_HOME} && mkdir -p ${XDG_CACHE_HOME}
+    export XDG_CONFIG_HOME=${COMP_DIR}/config && rm -rf ${XDG_CONFIG_HOME} && mkdir -p ${XDG_CONFIG_HOME}
+    export XDG_DATA_HOME=${COMP_DIR}/data && rm -rf ${XDG_DATA_HOME} && mkdir -p ${XDG_DATA_HOME}
 
     REPO_ROOT=${XDG_CONFIG_HOME}/helm
     PLUGIN_ROOT=${XDG_DATA_HOME}/helm/plugins
 else
-    export HELM_HOME=${HELM_ROOT}
+    export HELM_HOME=${COMP_DIR}/.helm && rm -rf ${HELM_HOME} && mkdir -p ${HELM_HOME}
     helm init --client-only
 
     REPO_ROOT=${HELM_HOME}/repository

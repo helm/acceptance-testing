@@ -44,6 +44,22 @@ ROBOT_PY_REQUIRES="${ROBOT_PY_REQUIRES:-robotframework==3.1.2}"
 export ROBOT_OUTPUT_DIR="${ROBOT_OUTPUT_DIR:-${PWD}/.acceptance}"
 ROBOT_VENV_DIR="${ROBOT_VENV_DIR:-${ROBOT_OUTPUT_DIR}/.venv}"
 
+echo "=============================================================================="
+echo "Available configuration variables:"
+echo "ROBOT_DEBUG_LEVEL - Choose debug level (0 to 3)."
+echo "                    Current: ${ROBOT_DEBUG_LEVEL}"
+echo "ROBOT_PY_REQUIRES - Space-separated list of python packages to install (including the robot framework)."
+echo "                    Current: ${ROBOT_PY_REQUIRES}"
+echo "ROBOT_OUTPUT_DIR  - The output directory for robot to use."
+echo "                    Current: ${ROBOT_OUTPUT_DIR}"
+echo "ROBOT_VENV_DIR    - The directory to be used for virtuelenv."
+echo "                    Current: ${ROBOT_VENV_DIR}"
+echo "ROBOT_RUN_TESTS   - Command-separated list of *.robot files to execute."
+echo "                    Current: ${ROBOT_RUN_TESTS:-unset (all)}"
+echo "ROBOT_HELM_PATH   - Path of directory of Helm to test."
+echo "                    Current: ${ROBOT_HELM_PATH:-Helm as found on \$PATH ($(which helm))}"
+echo "=============================================================================="
+
 # Only use the -d flag for mktemp as many other flags don't
 # work on every plateform
 export TMP_DIR=$(mktemp -d ${ROBOT_OUTPUT_DIR}/helm-acceptance.XXXXXX)

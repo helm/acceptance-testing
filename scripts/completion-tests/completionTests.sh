@@ -158,12 +158,16 @@ _completionTests_verifyCompletion "helm plugin update " "template push push-arti
 _completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"
 
 # For the global --kube-context flag
-_completionTests_verifyCompletion "helm --kube-context " "dev1 dev2 accept prod"
-_completionTests_verifyCompletion ZFAIL "helm --kube-context=" "dev1 dev2 accept prod"
-_completionTests_verifyCompletion "helm upgrade --kube-context " "dev1 dev2 accept prod"
-_completionTests_verifyCompletion "helm upgrade --kube-context d" "dev1 dev2"
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    # Feature not available in v2
+    _completionTests_verifyCompletion "helm --kube-context " "dev1 dev2 accept prod"
+    _completionTests_verifyCompletion ZFAIL "helm --kube-context=" "dev1 dev2 accept prod"
+    _completionTests_verifyCompletion "helm upgrade --kube-context " "dev1 dev2 accept prod"
+    _completionTests_verifyCompletion "helm upgrade --kube-context d" "dev1 dev2"
+fi
 # For the global --namespace flag
 if [ ! -z ${ROBOT_HELM_V3} ]; then
+    # No namespace flag in v2
     _completionTests_verifyCompletion "helm --namespace " "casterly-rock white-harbor winterfell"
     _completionTests_verifyCompletion "helm --namespace w" "white-harbor winterfell"
     _completionTests_verifyCompletion ZFAIL "helm --namespace=w" "white-harbor winterfell"

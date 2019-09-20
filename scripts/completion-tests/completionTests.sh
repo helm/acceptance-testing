@@ -130,7 +130,7 @@ fi
 
 # Completion of commands while using flags
 _completionTests_verifyCompletion "helm --kube-context prod sta" "status"
-_completionTests_verifyCompletion ZFAIL "helm --kubeconfig=/tmp/config lis" "list"
+_completionTests_verifyCompletion "helm --kubeconfig=/tmp/config lis" "list"
 _completionTests_verifyCompletion ZFAIL "helm get hooks --kubec" "--kubeconfig= --kubeconfig"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"

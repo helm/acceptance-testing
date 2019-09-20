@@ -157,6 +157,25 @@ _completionTests_verifyCompletion "helm plugin remove pu" "push push-artifactory
 _completionTests_verifyCompletion "helm plugin update " "template push push-artifactory"
 _completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"
 
+# For the global --kube-context flag
+_completionTests_verifyCompletion "helm --kube-context " "dev1 dev2 accept prod"
+_completionTests_verifyCompletion ZFAIL "helm --kube-context=" "dev1 dev2 accept prod"
+_completionTests_verifyCompletion "helm upgrade --kube-context " "dev1 dev2 accept prod"
+_completionTests_verifyCompletion "helm upgrade --kube-context d" "dev1 dev2"
+# For the global --namespace flag
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    _completionTests_verifyCompletion "helm --namespace " "casterly-rock white-harbor winterfell"
+    _completionTests_verifyCompletion "helm --namespace w" "white-harbor winterfell"
+    _completionTests_verifyCompletion ZFAIL "helm --namespace=w" "white-harbor winterfell"
+    _completionTests_verifyCompletion "helm upgrade --namespace " "casterly-rock white-harbor winterfell"
+
+    # With override flags
+    _completionTests_verifyCompletion "helm --kubeconfig myconfig --namespace " "meereen myr volantis"
+    _completionTests_verifyCompletion "helm --kubeconfig=myconfig --namespace " "meereen myr volantis"
+    _completionTests_verifyCompletion "helm --kube-context mycontext --namespace " "braavos old-valyria yunkai"
+    _completionTests_verifyCompletion "helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+fi
+
 # This must be the last call.  It allows to exit with an exit code
 # that reflects the final status of all the tests.
 _completionTests_exit

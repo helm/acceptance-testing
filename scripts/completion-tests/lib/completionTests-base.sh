@@ -133,7 +133,8 @@ _completionTests_complete() {
    [ "${cmdLine: -1}" = " " ] && COMP_CWORD=${#COMP_WORDS[@]}
 
    # Call the completion function associated with the binary being called.
-   eval $(_completionTests_findCompletionFunction ${COMP_WORDS[0]})
+   # Also redirect stderr to stdout as for real completion
+   eval $(_completionTests_findCompletionFunction ${COMP_WORDS[0]}) 2>&1
 
    # Return the result of the completion.
    echo "${COMPREPLY[@]}"

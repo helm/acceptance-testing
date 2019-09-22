@@ -39,17 +39,15 @@ set_shell_debug_level 2
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR/../
 
-# We force the tests to use a directory of our own choosing
-# to make sure that when we wipe it clean, we don't wipe
-# some directory that was important to the user.
-# Don't use .helm as it may collide with a valid directory
-FINAL_DIR_NAME=".helm_acceptance_tests"
-
 # Acceptance test configurables
 ROBOT_PY_REQUIRES="${ROBOT_PY_REQUIRES:-robotframework==3.1.2}"
-ROBOT_OUTPUT_DIR="${ROBOT_OUTPUT_DIR:-${PWD}/.acceptance}"
-ROBOT_HELM_HOME_DIR="${ROBOT_HELM_HOME_DIR:-${ROBOT_OUTPUT_DIR}}/${FINAL_DIR_NAME}"
+export ROBOT_OUTPUT_DIR="${ROBOT_OUTPUT_DIR:-${PWD}/.acceptance}"
 ROBOT_VENV_DIR="${ROBOT_VENV_DIR:-${ROBOT_OUTPUT_DIR}/.venv}"
+
+# Only use the -d flag for mktemp as many other flags don't
+# work on every plateform
+export TMP_DIR=$(mktemp -d ${ROBOT_OUTPUT_DIR}/helm-acceptance.XXXXXX)
+trap "rm -rf ${TMP_DIR}" EXIT
 
 SUITES_TO_RUN=""
 # Allow to specify which test suites to run in a space-separated or comma-separated list
@@ -69,21 +67,9 @@ if [ ! -z "${ROBOT_HELM_PATH}" ]; then
 fi
 export PATH="${ROBOT_VENV_DIR}/bin:${PATH}"
 
-set_shell_debug_level 3
-# A bit of safety before wiping the entire directory
-if [ $(basename ${ROBOT_HELM_HOME_DIR}) == "${FINAL_DIR_NAME}" ]; then
-    rm -rf ${ROBOT_HELM_HOME_DIR}
-else
-    echo "ABORT: should not delete unexpected directory ${ROBOT_HELM_HOME_DIR}"
-    echo "ABORT: error in acceptance-testing code!"
-    echo "Please report a bug at https://github.com/helm/acceptance-testing/issues"
-    exit 1
-fi
-set_shell_debug_level 2
-
-export XDG_CACHE_HOME=${ROBOT_HELM_HOME_DIR}/cache && mkdir -p ${XDG_CACHE_HOME}
-export XDG_CONFIG_HOME=${ROBOT_HELM_HOME_DIR}/config && mkdir -p ${XDG_CONFIG_HOME}
-export XDG_DATA_HOME=${ROBOT_HELM_HOME_DIR}/data && mkdir -p ${XDG_DATA_HOME}
+export XDG_CACHE_HOME=${TMP_DIR}/cache && mkdir -p ${XDG_CACHE_HOME}
+export XDG_CONFIG_HOME=${TMP_DIR}/config && mkdir -p ${XDG_CONFIG_HOME}
+export XDG_DATA_HOME=${TMP_DIR}/data && mkdir -p ${XDG_DATA_HOME}
 
 # We fully support helm v3 and partially support helm v2 at this time.
 # To figure out which version of helm is used, we run 'helm version'

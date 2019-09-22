@@ -53,6 +53,34 @@ if ! [ -f ${BINARY_PATH_DOCKER}/${BINARY_NAME} ]; then
 fi
 cp ${BINARY_PATH_DOCKER}/${BINARY_NAME} ${COMP_DIR}/bin
 
+# kubectl stub
+cat > ${COMP_DIR}/bin/kubectl << EOF
+#!/bin/sh
+# return some fake namespaces
+if echo "\$*" | grep -q namespace; then
+    if echo "\$*" | grep -q -- --context; then
+        echo "braavos old-valyria yunkai"
+        exit 0
+    fi
+
+    if echo "\$*" | grep -q -- --kubeconfig; then
+        echo "meereen myr volantis"
+        exit 0
+    fi
+
+    echo "casterly-rock white-harbor winterfell"
+    exit 0
+fi
+
+# return some fake contexts
+if echo "\$*" | grep -q context; then
+    echo "accept dev1 dev2 prod"
+    exit 0
+fi
+EOF
+chmod a+x ${COMP_DIR}/bin/kubectl
+cat ${COMP_DIR}/bin/kubectl
+
 # Now run all tests, even if there is a failure.
 # But remember if there was any failure to report it at the end.
 set +e

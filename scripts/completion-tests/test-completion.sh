@@ -32,7 +32,10 @@ if [ -z $(which docker) ]; then
   exit 2;
 fi
 
-COMP_DIR=/tmp/helm-acceptance-shell-completion-tests
+# Only use the -d flag for mktemp as many other flags don't
+# work on every plateform
+export COMP_DIR=$(mktemp -d ${ROBOT_OUTPUT_DIR}/helm-acceptance-completion.XXXXXX)
+trap "rm -rf ${COMP_DIR}" EXIT
 
 COMP_SCRIPT_NAME=completionTests.sh
 COMP_SCRIPT=${COMP_DIR}/${COMP_SCRIPT_NAME}
@@ -98,6 +101,7 @@ docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+           -e COMP_DIR=${COMP_DIR} \
            ${BASH4_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -121,6 +125,7 @@ docker run --rm \
            -e BASH_COMPLETION=/usr/share/bash-completion \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+           -e COMP_DIR=${COMP_DIR} \
            ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -136,6 +141,7 @@ docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+           -e COMP_DIR=${COMP_DIR} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -153,6 +159,7 @@ docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+           -e COMP_DIR=${COMP_DIR} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################

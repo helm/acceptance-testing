@@ -151,7 +151,9 @@ _completionTests_verifyCompletion "helm repo remove " "stable test1 test2"
 _completionTests_verifyCompletion "helm repo remove test" "test1 test2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Make sure completion works as expected when there are no repositories configured
+    tmp=$XDG_CONFIG_HOME
     XDG_CONFIG_HOME='/invalid/path' _completionTests_verifyCompletion "helm repo remove " ""
+    XDG_CONFIG_HOME=$tmp
 fi
 
 # For the plugin command
@@ -161,7 +163,9 @@ _completionTests_verifyCompletion "helm plugin update " "template push push-arti
 _completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Make sure completion works as expected when there are no plugins
+    tmp=$XDG_DATA_HOME
     XDG_DATA_HOME='/invalid/path' _completionTests_verifyCompletion "helm plugin remove " ""
+    XDG_DATA_HOME=$tmp
 fi
 
 # For the global --kube-context flag

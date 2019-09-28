@@ -107,7 +107,9 @@ _completionTests_sort() {
 # us to find the existing completion function name.
 _completionTests_findCompletionFunction() {
     binary=$(basename $1)
-    local out=($(complete -p $binary))
+    # The below must work for both bash and zsh
+    # which is why we use grep as complete -p $binary only works for bash
+    local out=($(complete -p | grep ${binary}$))
     local returnNext=0
     for i in ${out[@]}; do
        if [ $returnNext -eq 1 ]; then

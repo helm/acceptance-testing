@@ -22,7 +22,10 @@ needs_cluster = False
 class Sh(common.CommandRunner):
     def require_cluster(self, require):
         global needs_cluster
-        needs_cluster = require
+        if require == "True" or require == "true":
+            needs_cluster = True
+        else:
+            needs_cluster = False
 
     def wrap(self, cmd):
         global needs_cluster

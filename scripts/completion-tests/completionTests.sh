@@ -208,6 +208,11 @@ mkdir -p $TMP_HELM_DIR
 HELM_DIR=$(dirname $(which helm))
 cp $HELM_DIR/helm $TMP_HELM_DIR/helm
 
+# Make 'helm' unavailable to make sure it can't be called direactly
+# by the dynamic completion code, which should instead use the helm
+# as called in the completion calls that follow.
+alias helm=echo
+
 # Testing with shell aliases is only applicable to bash.
 # Zsh replaces the alias before calling the completion function,
 # so it does not make sense to try zsh completion with an alias.
@@ -222,11 +227,6 @@ if [ "$SHELL_TYPE" = bash ]; then
     # Hook these new aliases to the helm completion function.
     complete -o default -F $(_completionTests_findCompletionFunction helm) helmAlias
     complete -o default -F $(_completionTests_findCompletionFunction helm) helmAliasWithVar
-
-    # Now make 'helm' unavailable to make sure it can't be used by
-    # the dynamic completion, which should instead use the helm
-    # specified in the completion call.
-    alias helm=echo
 
     # Completion with normal alias
     _completionTests_verifyCompletion "helmAlias lis" "list"

@@ -61,7 +61,7 @@ Make sure both repos get updated
     Output contains  Successfully got an update from the "jfrog" chart repository
     Output contains  Update Complete. ⎈ Happy Helming!⎈
 
-Try to remove inexistant repo
+Try to remove nonexistent repo
     Check helm version
     Should fail  helm repo remove badname
     Output contains  Error: no repo named "badname" found

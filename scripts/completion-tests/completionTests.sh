@@ -190,6 +190,20 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm --kube-context mycontext --namespace " "braavos old-valyria yunkai"
     _completionTests_verifyCompletion "helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 fi
+# For the --output flag that applies to multiple commands
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    # Feature not available in v2
+
+    # Also test that the list of outputs matches what the helm message gives.
+    # This is an imperfect way of detecting if the output format list has changed, but
+    # the completion wasn't updated to match.
+    outputFormats=$(helm repo list -h | grep -- --output | cut -d: -f2 | cut -d '(' -f1 | sed s/,//g)
+    _completionTests_verifyCompletion "helm repo list --output " "${outputFormats}"
+    _completionTests_verifyCompletion "helm install --output " "${outputFormats}"
+    _completionTests_verifyCompletion "helm history -o " "${outputFormats}"
+    _completionTests_verifyCompletion "helm list -o " "${outputFormats}"
+fi
+
 
 ##############################################################
 # Completion with helm called through an alias or using a path

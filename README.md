@@ -1,10 +1,50 @@
 # Helm Acceptance Tests
 
-*Note: these tests have only been run against Helm 3 ([dev-v3](https://github.com/helm/helm/tree/dev-v3))*
+[![GitHub Actions status](https://github.com/helm/acceptance-testing/workflows/acceptance-tests/badge.svg)](https://github.com/helm/acceptance-testing/actions)
 
 This repo contains the source for Helm acceptance tests.
-
 The tests are written using [Robot Framework](https://robotframework.org/).
+
+*Note: these tests have only been run against Helm 3 ([dev-v3](https://github.com/helm/helm/tree/dev-v3))*
+
+## Test Summary
+
+### Kubernetes Versions
+
+Helm is tested to work against the following versions of Kubernetes:
+
+<!-- 
+TODO
+
+Add support for 1.16+, getting the following error:
+Error: apiVersion "apps/v1beta1" in nginx/templates/deployment.yaml is not available
+[1.16.1](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.16.md)
+
+Also, upgrade to 1.15.4 and 1.14.7
+(see issue on kind: https://github.com/kubernetes-sigs/kind/issues/948)
+
+-->
+
+- [1.15.3](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.15.md)
+- [1.14.6](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.14.md)
+
+Test suite: [kubernetes_versions.robot](./testsuites/kubernetes_versions.robot)
+
+
+### Shell Completion
+
+Helm's shell completion functionality is tested against the following shells:
+
+- Bash
+- Zsh
+
+Test suite: [shells.robot](./testsuites/shells.robot)
+
+### Helm Repositories
+
+Basic functionality of the chart repository subsystem is tested.
+
+Test suite: [repos.robot](./testsuites/repos.robot)
 
 ## System requirements
 
@@ -23,6 +63,13 @@ From the root of this repo, run the following:
 
 ```
 make acceptance
+```
+
+Alternatively, if you have Docker installed, 
+the system requirements above are not needed, and you can run the following
+command which will simulate CI:
+```
+make github-actions-ci-local
 ```
 
 Note: by default, the tests will use helm as found on your PATH.
@@ -107,7 +154,6 @@ contains a base class called `CommandRunner` that you will likely want to
 leverage when adding support for a new external tool.
 
 The test run is wrapped by [acceptance.sh](./scripts/acceptance.sh) -
-in this file the environment is validated (i.e. check if required tools present).
-
-sinstalled (including Robot Framework itself). If any additional Python libraries
-are required for a new library, it can be appended to `ROBOT_PY_REQUIRES`.
+in this file the environment is validated (i.e. check if required tools present). 
+If any additional Python libraries are required for a new library, 
+it can be appended to `ROBOT_PY_REQUIRES`.

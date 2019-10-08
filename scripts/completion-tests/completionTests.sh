@@ -110,7 +110,7 @@ fi
 
 # Basic second level commands (static completion)
 if [ ! -z ${ROBOT_HELM_V3} ]; then
-    _completionTests_verifyCompletion "helm get " "hooks manifest values"
+    _completionTests_verifyCompletion "helm get " "all notes hooks manifest values"
 else
     _completionTests_verifyCompletion "helm get " "hooks manifest notes values"
 fi
@@ -133,7 +133,7 @@ _completionTests_verifyCompletion "helm --kubeconfig=/tmp/config lis" "list"
 _completionTests_verifyCompletion ZFAIL "helm get hooks --kubec" "--kubeconfig= --kubeconfig"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"
-    _completionTests_verifyCompletion KFAIL "helm -v get " "hooks manifest values"
+    _completionTests_verifyCompletion KFAIL "helm -v get " "notes all hooks manifest values"
     _completionTests_verifyCompletion ZFAIL "helm get --name" "--namespace= --namespace"
 fi
 

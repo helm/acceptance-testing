@@ -1,3 +1,18 @@
+#
+# Copyright The Helm Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 *** Settings ***
 Documentation     Verify Helm functionality on multiple Kubernetes versions.
 ...
@@ -6,8 +21,9 @@ Documentation     Verify Helm functionality on multiple Kubernetes versions.
 ...               kind cluster can be used by specifying it in an env var
 ...               representing the version, for example:
 ...
-...                  export KIND_CLUSTER_1_14_3="helm-ac-keepalive-1.14.3"
-...                  export KIND_CLUSTER_1_15_0="helm-ac-keepalive-1.15.0"
+...                  export KIND_CLUSTER_1_16_1="helm-ac-keepalive-1.16.1"
+...                  export KIND_CLUSTER_1_15_4="helm-ac-keepalive-1.15.4"
+...                  export KIND_CLUSTER_1_14_7="helm-ac-keepalive-1.14.7"
 ...
 Library           String
 Library           OperatingSystem
@@ -19,11 +35,14 @@ Suite Setup       Suite Setup
 Suite Teardown    Suite Teardown
 
 *** Test Cases ***
-Helm works with Kubernetes 1.14.3
-    Test Helm on Kubernetes version   1.14.3
+#Helm works with Kubernetes 1.16.1
+#    Test Helm on Kubernetes version   1.16.1
 
-Helm works with Kubernetes 1.15.0
-    Test Helm on Kubernetes version   1.15.0
+Helm works with Kubernetes 1.15.3
+    Test Helm on Kubernetes version   1.15.3
+
+Helm works with Kubernetes 1.14.6
+    Test Helm on Kubernetes version   1.14.6
 
 *** Keyword ***
 Test Helm on Kubernetes version

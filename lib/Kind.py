@@ -9,7 +9,7 @@ LOG_LEVEL = 'debug'
 MAX_WAIT_KIND_NODE_SECONDS = 60
 KIND_NODE_INTERVAL_SECONDS = 2
 
-MAX_WAIT_KIND_POD_SECONDS = 60
+MAX_WAIT_KIND_POD_SECONDS = 120
 KIND_POD_INTERVAL_SECONDS = 2
 
 KIND_POD_EXPECTED_NUMBER = 8
@@ -38,6 +38,12 @@ class Kind(common.CommandRunner):
             cmd += ' --name='+new_cluster_name
             cmd += ' --image='+DOCKER_HUB_REPO+':v'+kube_version
             self.run_command(cmd)
+
+        # Fix for running kind in docker, switch the port+IP in the kubeconfig
+        if os.path.exists('/.dockerenv'):
+            print('Running in Docker, modifying IP in kubeconfig')
+            fixcmd = 'export KIND_IP=$(docker inspect '+LAST_CLUSTER_NAME+'-control-plane | grep \'IPAddress": "\' | head -1 | awk \'{print $2}\' | tr -d \\",) && sed -i "s/https:\/\/127\.0\.0\.1:.*/https:\/\/${KIND_IP}:6443/" $(kind get kubeconfig-path --name="'+LAST_CLUSTER_NAME+'")'
+            self.run_command(fixcmd)
 
     def delete_test_cluster(self):
         if LAST_CLUSTER_EXISTING:

@@ -15,13 +15,25 @@
 # limitations under the License.
 
 export KUBECTL_VERSION="v1.16.1"
-export HELM_VERSION="v3.0.0-beta.4"
 export KIND_VERSION="v0.5.1"
 
 rm -rf bin/
 mkdir -p bin/
 export PATH="${PWD}/bin:${HOME}/.local/bin:${PATH}"
 export GITHUB_SHA="${GITHUB_SHA:-latest}"
+
+# Build helm from dev-v3 source
+which helm || true
+mkdir -p /tmp/gopath/src/helm.sh
+pushd /tmp/gopath/src/helm.sh
+git clone https://github.com/helm/helm.git -b dev-v3
+pushd helm/
+GOPATH=/tmp/gopath make build
+popd
+popd
+mv /tmp/gopath/src/helm.sh/helm/bin/helm bin/helm
+helm version
+which helm
 
 # These tools appear to be in the GitHub "ubuntu-latest" environment, but not in
 # the ubuntu:latest image from Docker Hub
@@ -46,14 +58,6 @@ chmod +x kubectl
 mv kubectl bin/kubectl
 kubectl version --client
 which kubectl
-
-# Install helm
-which helm || true
-curl -L https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz | tar xz -C /tmp
-mv /tmp/linux-amd64/helm bin/helm
-rm -rf /tmp/linux-amd64
-helm version
-which helm
 
 # Install kind
 which helm || true

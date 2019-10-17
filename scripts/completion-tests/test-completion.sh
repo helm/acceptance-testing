@@ -20,6 +20,17 @@
 set -e
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
+# TODO: this is redeclared, but shouldnt have to be?
+# getting error "scripts/completion-tests/test-completion.sh: line 23: set_shell_debug_level: command not found"
+set_shell_debug_level()
+{
+    set +x
+    if [ $ROBOT_DEBUG_LEVEL -ge $1 ]; then
+       set -x
+    fi
+}
+export -f set_shell_debug_level
+
 set_shell_debug_level 2
 
 BINARY_NAME=helm
@@ -46,12 +57,18 @@ mkdir -p ${COMP_DIR}/bin
 cp ${SCRIPT_DIR}/${COMP_SCRIPT_NAME} ${COMP_DIR}
 cp ${SCRIPT_DIR}/lib/completionTests-base.sh ${COMP_DIR}/lib
 
-if ! [ -f ${BINARY_PATH_DOCKER}/${BINARY_NAME} ]; then
-    echo "These tests require a helm binary located at ${BINARY_PATH_DOCKER}/${BINARY_NAME}"
-    echo "Hint: Run 'make build-cross' in a clone of helm repo"
-    exit 2
+if [[ "${GITHUB_SHA}" == "" ]]; then
+  CHECK_BINARY_PATH="$(cd ${BINARY_PATH_DOCKER} && pwd)/${BINARY_NAME}"
+  if [[ ! -f ${CHECK_BINARY_PATH} ]] && [[ -L ${CHECK_BINARY_PATH} ]]; then
+      echo "These tests require a helm binary located at ${CHECK_BINARY_PATH}"
+      echo "Hint: Run 'make build-cross' in a clone of helm repo"
+      exit 2
+  fi
+  cp ${CHECK_BINARY_PATH} ${COMP_DIR}/bin
+else
+  echo "Running on GitHub Actions CI - using system-wide Helm 3 binary."
+  cp $(which helm) ${COMP_DIR}/bin
 fi
-cp ${BINARY_PATH_DOCKER}/${BINARY_NAME} ${COMP_DIR}/bin
 
 # kubectl stub
 cat > ${COMP_DIR}/bin/kubectl << EOF

@@ -1,4 +1,18 @@
 #!/bin/bash -e
+#
+# Copyright The Helm Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # Turn on debug printouts if the user requested a debug level >= $1
 set_shell_debug_level()
@@ -64,7 +78,8 @@ set_shell_debug_level 2
 
 # Only use the -d flag for mktemp as many other flags don't
 # work on every plateform
-export TMP_DIR=$(mktemp -d ${ROBOT_OUTPUT_DIR}/helm-acceptance.XXXXXX)
+mkdir -p ${ROBOT_OUTPUT_DIR}
+export TMP_DIR="$(mktemp -d ${ROBOT_OUTPUT_DIR}/helm-acceptance.XXXXXX)"
 trap "rm -rf ${TMP_DIR}" EXIT
 
 SUITES_TO_RUN=""

@@ -52,9 +52,9 @@ generated: "2019-08-11T22:28:44.841141-04:00"
 repositories:
 - name: stable
   url: https://kubernetes-charts.storage.googleapis.com
-- name: test1
+- name: zztest1
   url: https://charts.example.com
-- name: test2
+- name: zztest2
   url: https://charts2.example.com
 EOF
 helm repo list
@@ -147,8 +147,8 @@ _completionTests_verifyCompletion KFAIL "helm dependenci" "dependencies"
 #####################
 
 # For the repo command
-_completionTests_verifyCompletion "helm repo remove " "stable test1 test2"
-_completionTests_verifyCompletion "helm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "helm repo remove " "stable zztest1 zztest2"
+_completionTests_verifyCompletion "helm repo remove zztest" "zztest1 zztest2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Make sure completion works as expected when there are no repositories configured
     tmp=$XDG_CONFIG_HOME
@@ -204,6 +204,47 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm list -o " "${outputFormats}"
 fi
 
+# For completing specification of charts
+if [ ! -z ${ROBOT_HELM_V3} ]; then
+    tmpFiles="zztest2file files"
+    touch $tmpFiles
+
+    _completionTests_verifyCompletion "helm show values " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm show values ht" "http:// https://"
+    _completionTests_verifyCompletion "helm show values zz" "zztest1/ zztest2/ zztest2file"
+    _completionTests_verifyCompletion "helm show values zztest2" "zztest2/ zztest2file"
+    _completionTests_verifyCompletion "helm show values zztest2f" ""
+    _completionTests_verifyCompletion "helm show values stable/yyy" ""
+    _completionTests_verifyCompletion KFAIL "helm show values stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm show values fil" "file:// files"
+
+    _completionTests_verifyCompletion "helm show chart zz" "zztest1/ zztest2/ zztest2file"
+    _completionTests_verifyCompletion "helm show readme zz" "zztest1/ zztest2/ zztest2file"
+    _completionTests_verifyCompletion "helm show values zz" "zztest1/ zztest2/ zztest2file"
+
+    _completionTests_verifyCompletion "helm pull " "zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm pull zz" "zztest1/ zztest2/"
+
+    _completionTests_verifyCompletion "helm install name " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm install name zz" "zztest1/ zztest2/ zztest2file"
+    _completionTests_verifyCompletion KFAIL "helm install name stable/z" "stable/zeppelin stable/zetcd"
+
+    _completionTests_verifyCompletion "helm template name " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm template name zz" "zztest1/ zztest2/ zztest2file"
+    _completionTests_verifyCompletion KFAIL "helm template name stable/z" "stable/zeppelin stable/zetcd"
+
+    _completionTests_verifyCompletion "helm upgrade release " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm upgrade release zz" "zztest1/ zztest2/ zztest2file"
+    _completionTests_verifyCompletion KFAIL "helm upgrade release stable/z" "stable/zeppelin stable/zetcd"
+
+    if [ "$SHELL_TYPE" = zsh ]; then
+        _completionTests_verifyCompletion "helm show values stab" "stable/ stable/."
+    else
+        _completionTests_verifyCompletion "helm show values stab" "stable/"
+    fi
+
+    \rm $tmpFiles
+fi
 
 ##############################################################
 # Completion with helm called through an alias or using a path
@@ -247,7 +288,7 @@ if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "helmAlias completion z" "zsh"
     _completionTests_verifyCompletion "helmAlias --kubecon" "--kubeconfig= --kubeconfig"
     _completionTests_verifyCompletion "helmAlias get hooks --kubec" "--kubeconfig= --kubeconfig"
-    _completionTests_verifyCompletion "helmAlias repo remove test" "test1 test2"
+    _completionTests_verifyCompletion "helmAlias repo remove zztest" "zztest1 zztest2"
     _completionTests_verifyCompletion "helmAlias plugin update pus" "push push-artifactory"
     _completionTests_verifyCompletion "helmAlias upgrade --kube-context d" "dev1 dev2"
     if [ ! -z ${ROBOT_HELM_V3} ]; then
@@ -259,7 +300,7 @@ if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "helmAliasWithVar completion z" "zsh"
     _completionTests_verifyCompletion "helmAliasWithVar --kubecon" "--kubeconfig= --kubeconfig"
     _completionTests_verifyCompletion "helmAliasWithVar get hooks --kubec" "--kubeconfig= --kubeconfig"
-    _completionTests_verifyCompletion "helmAliasWithVar repo remove test" "test1 test2"
+    _completionTests_verifyCompletion "helmAliasWithVar repo remove zztest" "zztest1 zztest2"
     _completionTests_verifyCompletion "helmAliasWithVar plugin update pus" "push push-artifactory"
     _completionTests_verifyCompletion "helmAliasWithVar upgrade --kube-context d" "dev1 dev2"
     if [ ! -z ${ROBOT_HELM_V3} ]; then
@@ -272,7 +313,7 @@ _completionTests_verifyCompletion "$TMP_HELM_DIR/helm lis" "list"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm completion z" "zsh"
 _completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig= --kubeconfig"
 _completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion "$TMP_HELM_DIR/helm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/helm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm upgrade --kube-context d" "dev1 dev2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
@@ -285,7 +326,7 @@ _completionTests_verifyCompletion "./helm lis" "list"
 _completionTests_verifyCompletion "./helm completion z" "zsh"
 _completionTests_verifyCompletion ZFAIL "./helm --kubecon" "--kubeconfig= --kubeconfig"
 _completionTests_verifyCompletion ZFAIL "./helm get hooks --kubec" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion "./helm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "./helm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "./helm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "./helm upgrade --kube-context d" "dev1 dev2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
@@ -305,7 +346,7 @@ _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm lis" "list"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm completion z" "zsh"
 _completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig= --kubeconfig"
 _completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm upgrade --kube-context d" "dev1 dev2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
@@ -318,7 +359,7 @@ _completionTests_verifyCompletion "myhelm lis" "list"
 _completionTests_verifyCompletion "myhelm completion z" "zsh"
 _completionTests_verifyCompletion ZFAIL "myhelm --kubecon" "--kubeconfig= --kubeconfig"
 _completionTests_verifyCompletion ZFAIL "myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion "myhelm repo remove test" "test1 test2"
+_completionTests_verifyCompletion "myhelm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "myhelm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "myhelm upgrade --kube-context d" "dev1 dev2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then

@@ -22,11 +22,11 @@ mkdir -p bin/
 export PATH="${PWD}/bin:${HOME}/.local/bin:${PATH}"
 export GITHUB_SHA="${GITHUB_SHA:-latest}"
 
-# Build helm from dev-v3 source
+# Build helm from source
 which helm || true
 mkdir -p /tmp/gopath/src/helm.sh
 pushd /tmp/gopath/src/helm.sh
-git clone https://github.com/helm/helm.git -b dev-v3
+git clone https://github.com/helm/helm.git -b master
 pushd helm/
 GOPATH=/tmp/gopath make build
 popd

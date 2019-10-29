@@ -157,14 +157,14 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
 fi
 
 # For the plugin command
-_completionTests_verifyCompletion "helm plugin remove " "template push push-artifactory"
-_completionTests_verifyCompletion "helm plugin remove pu" "push push-artifactory"
+_completionTests_verifyCompletion "helm plugin uninstall " "template push push-artifactory"
+_completionTests_verifyCompletion "helm plugin uninstall pu" "push push-artifactory"
 _completionTests_verifyCompletion "helm plugin update " "template push push-artifactory"
 _completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Make sure completion works as expected when there are no plugins
     tmp=$XDG_DATA_HOME
-    XDG_DATA_HOME='/invalid/path' _completionTests_verifyCompletion "helm plugin remove " ""
+    XDG_DATA_HOME='/invalid/path' _completionTests_verifyCompletion "helm plugin uninstall " ""
     XDG_DATA_HOME=$tmp
 fi
 

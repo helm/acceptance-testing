@@ -113,7 +113,7 @@ export XDG_DATA_HOME=${TMP_DIR}/data && mkdir -p ${XDG_DATA_HOME}
 # contact the cluster, which may not be accessible, and the command
 # will timeout.
 set_shell_debug_level 3
-if helm version -c &> /dev/null; then
+if helm version -c --tls &> /dev/null; then
     echo "===================="
     echo "Running with Helm v2"
     echo "===================="

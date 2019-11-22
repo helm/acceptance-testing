@@ -28,10 +28,11 @@ mkdir -p /tmp/gopath/src/helm.sh
 pushd /tmp/gopath/src/helm.sh
 git clone https://github.com/helm/helm.git -b master
 pushd helm/
-GOPATH=/tmp/gopath make build
+GOPATH=/tmp/gopath make build build-cross
 popd
 popd
 mv /tmp/gopath/src/helm.sh/helm/bin/helm bin/helm
+mv /tmp/gopath/src/helm.sh/helm/_dist/linux-amd64/helm bin/helm-docker
 helm version
 which helm
 
@@ -60,7 +61,7 @@ kubectl version --client
 which kubectl
 
 # Install kind
-which helm || true
+which kind || true
 curl -LO https://github.com/kubernetes-sigs/kind/releases/download/${KIND_VERSION}/kind-linux-amd64
 chmod +x kind-linux-amd64
 mv kind-linux-amd64 bin/kind

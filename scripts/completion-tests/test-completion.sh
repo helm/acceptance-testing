@@ -67,7 +67,7 @@ if [[ "${GITHUB_SHA}" == "" ]]; then
   cp ${CHECK_BINARY_PATH} ${COMP_DIR}/bin
 else
   echo "Running on GitHub Actions CI - using system-wide Helm 3 binary."
-  cp $(which helm) ${COMP_DIR}/bin
+  cp $(which helm-docker) ${COMP_DIR}/bin/helm
 fi
 
 # kubectl stub

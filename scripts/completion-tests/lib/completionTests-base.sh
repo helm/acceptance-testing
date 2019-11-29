@@ -80,7 +80,7 @@ _completionTests_verifyCompletion() {
    else
       _completionTests_TEST_FAILED=1
       currentFailure=1
-      echo "FAIL: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
+      echo "ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
    fi
 
    return $currentFailure

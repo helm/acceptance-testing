@@ -17,3 +17,7 @@ github-actions-ci-local:
 	    --privileged -v /var/run/docker.sock:/var/run/docker.sock \
 	    --entrypoint=/bin/bash ubuntu:latest \
 	    -c 'set +e; scripts/github-actions-ci.sh; echo "Exited $?. (Ctrl+D to exit shell)"; bash'
+
+.PHONY: clean
+clean:
+	/bin/rm -rf $(ROOT_DIR)/.acceptance

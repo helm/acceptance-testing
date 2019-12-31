@@ -119,22 +119,39 @@ _completionTests_verifyCompletion "helm completion " "bash zsh"
 _completionTests_verifyCompletion "helm completion z" "zsh"
 
 # Completion of flags
-_completionTests_verifyCompletion ZFAIL "helm --kube-con" "--kube-context= --kube-context"
-_completionTests_verifyCompletion ZFAIL "helm --kubecon" "--kubeconfig= --kubeconfig"
+if [ "$SHELL_TYPE" = bash ]; then
+    _completionTests_verifyCompletion "helm --kube-con" "--kube-context= --kube-context"
+    _completionTests_verifyCompletion "helm --kubecon" "--kubeconfig= --kubeconfig"
+else
+    _completionTests_verifyCompletion "helm --kube-con" "--kube-context --kube-context --kube-context"
+    _completionTests_verifyCompletion "helm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
+fi
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm -v" "-v"
-    _completionTests_verifyCompletion ZFAIL "helm --v" "--v= --vmodule= --v --vmodule"
-    _completionTests_verifyCompletion ZFAIL "helm --name" "--namespace= --namespace"
+    if [ "$SHELL_TYPE" = bash ]; then
+        _completionTests_verifyCompletion "helm --v" "--v= --vmodule= --v --vmodule"
+        _completionTests_verifyCompletion "helm --name" "--namespace= --namespace"
+    else
+        _completionTests_verifyCompletion "helm --v" "--v --vmodule --v --vmodule --v --vmodule"
+        _completionTests_verifyCompletion "helm --name" "--namespace --namespace --namespace"
+    fi
 fi
-
 # Completion of commands while using flags
 _completionTests_verifyCompletion "helm --kube-context prod sta" "status"
 _completionTests_verifyCompletion "helm --kubeconfig=/tmp/config lis" "list"
-_completionTests_verifyCompletion ZFAIL "helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+if [ "$SHELL_TYPE" = bash ]; then
+    _completionTests_verifyCompletion "helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+else
+    _completionTests_verifyCompletion "helm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
+fi
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"
     _completionTests_verifyCompletion KFAIL "helm -v get " "all hooks manifest notes values"
-    _completionTests_verifyCompletion ZFAIL "helm get --name" "--namespace= --namespace"
+    if [ "$SHELL_TYPE" = bash ]; then
+        _completionTests_verifyCompletion "helm get --name" "--namespace= --namespace"
+    else
+        _completionTests_verifyCompletion "helm get --name" "--namespace --namespace --namespace"
+    fi
 fi
 
 # Alias completion
@@ -172,17 +189,44 @@ fi
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Feature not available in v2
     _completionTests_verifyCompletion "helm --kube-context " "dev1 dev2 accept prod"
-    _completionTests_verifyCompletion ZFAIL "helm --kube-context=" "dev1 dev2 accept prod"
     _completionTests_verifyCompletion "helm upgrade --kube-context " "dev1 dev2 accept prod"
     _completionTests_verifyCompletion "helm upgrade --kube-context d" "dev1 dev2"
+    if [ "$SHELL_TYPE" = bash ]; then
+        _completionTests_verifyCompletion "helm --kube-context=" "dev1 dev2 accept prod"
+    else
+        _completionTests_verifyCompletion "helm --kube-context=" "--kube-context=dev1 --kube-context=dev2 --kube-context=accept --kube-context=prod"
+    fi
 fi
+
 # For the global --namespace flag
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # No namespace flag in v2
     _completionTests_verifyCompletion "helm --namespace " "casterly-rock white-harbor winterfell"
     _completionTests_verifyCompletion "helm --namespace w" "white-harbor winterfell"
-    _completionTests_verifyCompletion ZFAIL "helm --namespace=w" "white-harbor winterfell"
     _completionTests_verifyCompletion "helm upgrade --namespace " "casterly-rock white-harbor winterfell"
+    _completionTests_verifyCompletion "helm -n " "casterly-rock white-harbor winterfell"
+    _completionTests_verifyCompletion "helm -n w" "white-harbor winterfell"
+    _completionTests_verifyCompletion "helm upgrade -n " "casterly-rock white-harbor winterfell"
+
+    if [ "$SHELL_TYPE" = bash ]; then
+        _completionTests_verifyCompletion "helm --namespace=" "casterly-rock white-harbor winterfell"
+        _completionTests_verifyCompletion "helm --namespace=w" "white-harbor winterfell"
+        _completionTests_verifyCompletion "helm ugrade --namespace=w" "white-harbor winterfell"
+        _completionTests_verifyCompletion "helm upgrade --namespace=" "casterly-rock white-harbor winterfell"
+        _completionTests_verifyCompletion "helm -n=" "casterly-rock white-harbor winterfell"
+        _completionTests_verifyCompletion "helm -n=w" "white-harbor winterfell"
+        _completionTests_verifyCompletion "helm ugrade -n=w" "white-harbor winterfell"
+        _completionTests_verifyCompletion "helm upgrade -n=" "casterly-rock white-harbor winterfell"
+    else
+        _completionTests_verifyCompletion "helm --namespace=" "--namespace=casterly-rock --namespace=white-harbor --namespace=winterfell"
+        _completionTests_verifyCompletion "helm --namespace=w" "--namespace=white-harbor --namespace=winterfell"
+        _completionTests_verifyCompletion "helm ugrade --namespace=w" "--namespace=white-harbor --namespace=winterfell"
+        _completionTests_verifyCompletion "helm upgrade --namespace=" "--namespace=casterly-rock --namespace=white-harbor --namespace=winterfell"
+        _completionTests_verifyCompletion "helm -n=" "-n=casterly-rock -n=white-harbor -n=winterfell"
+        _completionTests_verifyCompletion "helm -n=w" "-n=white-harbor -n=winterfell"
+        _completionTests_verifyCompletion "helm ugrade -n=w" "-n=white-harbor -n=winterfell"
+        _completionTests_verifyCompletion "helm upgrade -n=" "-n=casterly-rock -n=white-harbor -n=winterfell"
+    fi
 
     # With override flags
     _completionTests_verifyCompletion "helm --kubeconfig myconfig --namespace " "meereen myr volantis"
@@ -311,26 +355,36 @@ fi
 # Completion with absolute path
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm lis" "list"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm completion z" "zsh"
-_completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig= --kubeconfig"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm upgrade --kube-context d" "dev1 dev2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 fi
+if [ "$SHELL_TYPE" = bash ]; then
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+else
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
+fi
 
 # Completion with relative path
 cd $TMP_HELM_DIR
 _completionTests_verifyCompletion "./helm lis" "list"
 _completionTests_verifyCompletion "./helm completion z" "zsh"
-_completionTests_verifyCompletion ZFAIL "./helm --kubecon" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion ZFAIL "./helm get hooks --kubec" "--kubeconfig= --kubeconfig"
 _completionTests_verifyCompletion "./helm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "./helm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "./helm upgrade --kube-context d" "dev1 dev2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "./helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+fi
+if [ "$SHELL_TYPE" = bash ]; then
+    _completionTests_verifyCompletion "./helm --kubecon" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "./helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+else
+    _completionTests_verifyCompletion "./helm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
+    _completionTests_verifyCompletion "./helm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
 fi
 cd - >/dev/null
 
@@ -344,28 +398,37 @@ source /dev/stdin <<- EOF
 EOF
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm lis" "list"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm completion z" "zsh"
-_completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion ZFAIL "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm upgrade --kube-context d" "dev1 dev2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 fi
+if [ "$SHELL_TYPE" = bash ]; then
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
+else
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
+fi
 
 # Completion with a different name for helm that is on PATH
 mv $TMP_HELM_DIR/myhelm $HELM_DIR/myhelm
 _completionTests_verifyCompletion "myhelm lis" "list"
 _completionTests_verifyCompletion "myhelm completion z" "zsh"
-_completionTests_verifyCompletion ZFAIL "myhelm --kubecon" "--kubeconfig= --kubeconfig"
-_completionTests_verifyCompletion ZFAIL "myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
 _completionTests_verifyCompletion "myhelm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "myhelm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "myhelm upgrade --kube-context d" "dev1 dev2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 fi
-
+if [ "$SHELL_TYPE" = bash ]; then
+    _completionTests_verifyCompletion "myhelm --kubecon" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
+else
+    _completionTests_verifyCompletion "myhelm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
+    _completionTests_verifyCompletion "myhelm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
+fi
 unalias helm
 
 # This must be the last call.  It allows to exit with an exit code

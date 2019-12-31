@@ -146,6 +146,24 @@ docker run --rm \
            ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
+# Bash centos completion tests
+# https://github.com/helm/helm/pull/7304
+########################################
+BASH_IMAGE=completion-bash-centos
+
+echo;echo;
+docker build -t ${BASH_IMAGE} - <<- EOF
+   FROM centos
+   RUN yum install -y bash-completion which
+EOF
+docker run --rm \
+           -v ${COMP_DIR}:${COMP_DIR} \
+           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+           -e COMP_DIR=${COMP_DIR} \
+           ${BASH_IMAGE} bash -c "source ${COMP_SCRIPT}"
+
+########################################
 # Zsh completion tests
 ########################################
 ZSH_IMAGE=completion-zsh

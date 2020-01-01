@@ -242,7 +242,7 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Also test that the list of outputs matches what the helm message gives.
     # This is an imperfect way of detecting if the output format list has changed, but
     # the completion wasn't updated to match.
-    outputFormats=$(helm repo list -h 2>&1 | grep -- --output | cut -d: -f2 | cut -d '(' -f1 | sed s/,//g)
+    outputFormats=$(helm repo list -h | grep -- --output | cut -d: -f2 | cut -d '(' -f1 | sed s/,//g)
     _completionTests_verifyCompletion "helm repo list --output " "${outputFormats}"
     _completionTests_verifyCompletion "helm install --output " "${outputFormats}"
     _completionTests_verifyCompletion "helm history -o " "${outputFormats}"

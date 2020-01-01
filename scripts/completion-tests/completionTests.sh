@@ -58,6 +58,8 @@ repositories:
   url: https://charts2.example.com
 EOF
 helm repo list
+# Fetch the details of the stable repo
+helm repo update
 
 # Setup some plugins to allow testing completion of the helm plugin command
 # We inject the content of different plugin.yaml files directly to avoid having
@@ -258,7 +260,7 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm show values zztest2" "zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm show values zztest2f" ""
     _completionTests_verifyCompletion "helm show values stable/yyy" ""
-    _completionTests_verifyCompletion KFAIL "helm show values stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm show values stable/z" "stable/zeppelin stable/zetcd"
     _completionTests_verifyCompletion "helm show values fil" "file:// files"
 
     _completionTests_verifyCompletion "helm show chart zz" "zztest1/ zztest2/ zztest2file"
@@ -270,15 +272,15 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
 
     _completionTests_verifyCompletion "helm install name " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
     _completionTests_verifyCompletion "helm install name zz" "zztest1/ zztest2/ zztest2file"
-    _completionTests_verifyCompletion KFAIL "helm install name stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm install name stable/z" "stable/zeppelin stable/zetcd"
 
     _completionTests_verifyCompletion "helm template name " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
     _completionTests_verifyCompletion "helm template name zz" "zztest1/ zztest2/ zztest2file"
-    _completionTests_verifyCompletion KFAIL "helm template name stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm template name stable/z" "stable/zeppelin stable/zetcd"
 
     _completionTests_verifyCompletion "helm upgrade release " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
     _completionTests_verifyCompletion "helm upgrade release zz" "zztest1/ zztest2/ zztest2file"
-    _completionTests_verifyCompletion KFAIL "helm upgrade release stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm upgrade release stable/z" "stable/zeppelin stable/zetcd"
 
     if [ "$SHELL_TYPE" = zsh ]; then
         _completionTests_verifyCompletion "helm show values stab" "stable/ stable/."

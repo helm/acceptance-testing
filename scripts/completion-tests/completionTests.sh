@@ -146,7 +146,7 @@ else
 fi
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"
-    _completionTests_verifyCompletion KFAIL "helm -v get " "all hooks manifest notes values"
+    _completionTests_verifyCompletion "helm -v 3 get " "all hooks manifest notes values"
     if [ "$SHELL_TYPE" = bash ]; then
         _completionTests_verifyCompletion "helm get --name" "--namespace= --namespace"
     else
@@ -154,10 +154,9 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     fi
 fi
 
-# Alias completion
-# Does not work.
-_completionTests_verifyCompletion KFAIL "helm ls" "ls"
-_completionTests_verifyCompletion KFAIL "helm dependenci" "dependencies"
+# Cobra command aliases are purposefully not completed
+_completionTests_verifyCompletion "helm ls" ""
+_completionTests_verifyCompletion "helm dependenci" ""
 
 #####################
 # Dynamic completions

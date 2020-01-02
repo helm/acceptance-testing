@@ -199,42 +199,44 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     fi
 fi
 
-# For the global --namespace flag
-if [ ! -z ${ROBOT_HELM_V3} ]; then
-    # No namespace flag in v2
-    _completionTests_verifyCompletion "helm --namespace " "casterly-rock white-harbor winterfell"
-    _completionTests_verifyCompletion "helm --namespace w" "white-harbor winterfell"
-    _completionTests_verifyCompletion "helm upgrade --namespace " "casterly-rock white-harbor winterfell"
-    _completionTests_verifyCompletion "helm -n " "casterly-rock white-harbor winterfell"
-    _completionTests_verifyCompletion "helm -n w" "white-harbor winterfell"
-    _completionTests_verifyCompletion "helm upgrade -n " "casterly-rock white-harbor winterfell"
+# Now requires a real cluster
+# # For the global --namespace flag
+# if [ ! -z ${ROBOT_HELM_V3} ]; then
+#     # No namespace flag in v2
+#     _completionTests_verifyCompletion "helm --namespace " "casterly-rock white-harbor winterfell"
+#     _completionTests_verifyCompletion "helm --namespace w" "white-harbor winterfell"
+#     _completionTests_verifyCompletion "helm upgrade --namespace " "casterly-rock white-harbor winterfell"
+#     _completionTests_verifyCompletion "helm -n " "casterly-rock white-harbor winterfell"
+#     _completionTests_verifyCompletion "helm -n w" "white-harbor winterfell"
+#     _completionTests_verifyCompletion "helm upgrade -n " "casterly-rock white-harbor winterfell"
 
-    if [ "$SHELL_TYPE" = bash ]; then
-        _completionTests_verifyCompletion "helm --namespace=" "casterly-rock white-harbor winterfell"
-        _completionTests_verifyCompletion "helm --namespace=w" "white-harbor winterfell"
-        _completionTests_verifyCompletion "helm ugrade --namespace=w" "white-harbor winterfell"
-        _completionTests_verifyCompletion "helm upgrade --namespace=" "casterly-rock white-harbor winterfell"
-        _completionTests_verifyCompletion "helm -n=" "casterly-rock white-harbor winterfell"
-        _completionTests_verifyCompletion "helm -n=w" "white-harbor winterfell"
-        _completionTests_verifyCompletion "helm ugrade -n=w" "white-harbor winterfell"
-        _completionTests_verifyCompletion "helm upgrade -n=" "casterly-rock white-harbor winterfell"
-    else
-        _completionTests_verifyCompletion "helm --namespace=" "--namespace=casterly-rock --namespace=white-harbor --namespace=winterfell"
-        _completionTests_verifyCompletion "helm --namespace=w" "--namespace=white-harbor --namespace=winterfell"
-        _completionTests_verifyCompletion "helm ugrade --namespace=w" "--namespace=white-harbor --namespace=winterfell"
-        _completionTests_verifyCompletion "helm upgrade --namespace=" "--namespace=casterly-rock --namespace=white-harbor --namespace=winterfell"
-        _completionTests_verifyCompletion "helm -n=" "-n=casterly-rock -n=white-harbor -n=winterfell"
-        _completionTests_verifyCompletion "helm -n=w" "-n=white-harbor -n=winterfell"
-        _completionTests_verifyCompletion "helm ugrade -n=w" "-n=white-harbor -n=winterfell"
-        _completionTests_verifyCompletion "helm upgrade -n=" "-n=casterly-rock -n=white-harbor -n=winterfell"
-    fi
+#     if [ "$SHELL_TYPE" = bash ]; then
+#         _completionTests_verifyCompletion "helm --namespace=" "casterly-rock white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm --namespace=w" "white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm ugrade --namespace=w" "white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm upgrade --namespace=" "casterly-rock white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm -n=" "casterly-rock white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm -n=w" "white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm ugrade -n=w" "white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm upgrade -n=" "casterly-rock white-harbor winterfell"
+#     else
+#         _completionTests_verifyCompletion "helm --namespace=" "--namespace=casterly-rock --namespace=white-harbor --namespace=winterfell"
+#         _completionTests_verifyCompletion "helm --namespace=w" "--namespace=white-harbor --namespace=winterfell"
+#         _completionTests_verifyCompletion "helm ugrade --namespace=w" "--namespace=white-harbor --namespace=winterfell"
+#         _completionTests_verifyCompletion "helm upgrade --namespace=" "--namespace=casterly-rock --namespace=white-harbor --namespace=winterfell"
+#         _completionTests_verifyCompletion "helm -n=" "-n=casterly-rock -n=white-harbor -n=winterfell"
+#         _completionTests_verifyCompletion "helm -n=w" "-n=white-harbor -n=winterfell"
+#         _completionTests_verifyCompletion "helm ugrade -n=w" "-n=white-harbor -n=winterfell"
+#         _completionTests_verifyCompletion "helm upgrade -n=" "-n=casterly-rock -n=white-harbor -n=winterfell"
+#     fi
 
-    # With override flags
-    _completionTests_verifyCompletion "helm --kubeconfig myconfig --namespace " "meereen myr volantis"
-    _completionTests_verifyCompletion "helm --kubeconfig=myconfig --namespace " "meereen myr volantis"
-    _completionTests_verifyCompletion "helm --kube-context mycontext --namespace " "braavos old-valyria yunkai"
-    _completionTests_verifyCompletion "helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
-fi
+#     # With override flags
+#     _completionTests_verifyCompletion "helm --kubeconfig myconfig --namespace " "meereen myr volantis"
+#     _completionTests_verifyCompletion "helm --kubeconfig=myconfig --namespace " "meereen myr volantis"
+#     _completionTests_verifyCompletion "helm --kube-context mycontext --namespace " "braavos old-valyria yunkai"
+#     _completionTests_verifyCompletion "helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+# fi
+
 # For the --output flag that applies to multiple commands
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Feature not available in v2
@@ -282,11 +284,7 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm upgrade release zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm upgrade release stable/z" "stable/zeppelin stable/zetcd"
 
-    if [ "$SHELL_TYPE" = zsh ]; then
-        _completionTests_verifyCompletion "helm show values stab" "stable/ stable/."
-    else
-        _completionTests_verifyCompletion "helm show values stab" "stable/"
-    fi
+    _completionTests_verifyCompletion "helm show values stab" "stable/ stable/."
 
     \rm $tmpFiles
 fi
@@ -336,9 +334,9 @@ if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "helmAlias repo remove zztest" "zztest1 zztest2"
     _completionTests_verifyCompletion "helmAlias plugin update pus" "push push-artifactory"
     _completionTests_verifyCompletion "helmAlias upgrade --kube-context d" "dev1 dev2"
-    if [ ! -z ${ROBOT_HELM_V3} ]; then
-        _completionTests_verifyCompletion "helmAlias --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
-    fi
+    # if [ ! -z ${ROBOT_HELM_V3} ]; then
+    #     _completionTests_verifyCompletion "helmAlias --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+    # fi
 
     # Completion with alias that contains a variable
     _completionTests_verifyCompletion "helmAliasWithVar lis" "list"
@@ -348,9 +346,9 @@ if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "helmAliasWithVar repo remove zztest" "zztest1 zztest2"
     _completionTests_verifyCompletion "helmAliasWithVar plugin update pus" "push push-artifactory"
     _completionTests_verifyCompletion "helmAliasWithVar upgrade --kube-context d" "dev1 dev2"
-    if [ ! -z ${ROBOT_HELM_V3} ]; then
-        _completionTests_verifyCompletion "helmAliasWithVar --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
-    fi
+    # if [ ! -z ${ROBOT_HELM_V3} ]; then
+    #     _completionTests_verifyCompletion "helmAliasWithVar --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+    # fi
 fi
 
 # Completion with absolute path
@@ -359,9 +357,9 @@ _completionTests_verifyCompletion "$TMP_HELM_DIR/helm completion z" "zsh"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm upgrade --kube-context d" "dev1 dev2"
-if [ ! -z ${ROBOT_HELM_V3} ]; then
-    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
-fi
+# if [ ! -z ${ROBOT_HELM_V3} ]; then
+#     _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+# fi
 if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig= --kubeconfig"
     _completionTests_verifyCompletion "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig= --kubeconfig"
@@ -377,9 +375,9 @@ _completionTests_verifyCompletion "./helm completion z" "zsh"
 _completionTests_verifyCompletion "./helm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "./helm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "./helm upgrade --kube-context d" "dev1 dev2"
-if [ ! -z ${ROBOT_HELM_V3} ]; then
-    _completionTests_verifyCompletion "./helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
-fi
+# if [ ! -z ${ROBOT_HELM_V3} ]; then
+#     _completionTests_verifyCompletion "./helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+# fi
 if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "./helm --kubecon" "--kubeconfig= --kubeconfig"
     _completionTests_verifyCompletion "./helm get hooks --kubec" "--kubeconfig= --kubeconfig"
@@ -402,9 +400,9 @@ _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm completion z" "zsh"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm upgrade --kube-context d" "dev1 dev2"
-if [ ! -z ${ROBOT_HELM_V3} ]; then
-    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
-fi
+# if [ ! -z ${ROBOT_HELM_V3} ]; then
+#     _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+# fi
 if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig= --kubeconfig"
     _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
@@ -420,9 +418,9 @@ _completionTests_verifyCompletion "myhelm completion z" "zsh"
 _completionTests_verifyCompletion "myhelm repo remove zztest" "zztest1 zztest2"
 _completionTests_verifyCompletion "myhelm plugin update pus" "push push-artifactory"
 _completionTests_verifyCompletion "myhelm upgrade --kube-context d" "dev1 dev2"
-if [ ! -z ${ROBOT_HELM_V3} ]; then
-    _completionTests_verifyCompletion "myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
-fi
+# if [ ! -z ${ROBOT_HELM_V3} ]; then
+#     _completionTests_verifyCompletion "myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
+# fi
 if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "myhelm --kubecon" "--kubeconfig= --kubeconfig"
     _completionTests_verifyCompletion "myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"

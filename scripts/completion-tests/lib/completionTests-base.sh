@@ -96,9 +96,13 @@ _completionTests_enable_sort() {
 
 _completionTests_sort() {
    if [ -n "${_completionTests_DISABLE_SORT}" ]; then
-      echo "$1"
+      # We use printf instead of echo as the $1 could be -n which would be
+      # interpreted as an argument to echo
+      printf "%s\n" "$1"
    else
-      echo $(echo "$1" | tr ' ' '\n' | sort -n)
+      # We use printf instead of echo as the $1 could be -n which would be
+      # interpreted as an argument to echo
+      printf "%s\n" "$1" | sed -e 's/^ *//' -e 's/ *$//' | tr ' ' '\n' | sort -n | tr '\n' ' '
    fi
 }
 
@@ -123,6 +127,7 @@ _completionTests_findCompletionFunction() {
 _completionTests_complete() {
    local cmdLine=$1
 
+
    # Set the bash completion variables which are
    # used for both bash and zsh completion
    COMP_LINE=${cmdLine}
@@ -142,7 +147,9 @@ _completionTests_complete() {
    eval $(_completionTests_findCompletionFunction ${COMP_WORDS[0]}) 2>&1
 
    # Return the result of the completion.
-   echo "${COMPREPLY[@]}"
+   # We use printf instead of echo as the first completion could be -n which
+   # would be interpreted as an argument to echo
+   printf "%s\n" "${COMPREPLY[@]}"
 }
 
 _completionTests_exit() {

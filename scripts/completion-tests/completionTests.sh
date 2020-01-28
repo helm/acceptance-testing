@@ -21,11 +21,6 @@ source ${COMP_DIR}/lib/completionTests-base.sh
 
 export PATH=${COMP_DIR}/bin:$PATH
 
-# Don't use the new source <() form as it does not work with bash v3
-source /dev/stdin <<- EOF
-   $(helm completion $SHELL_TYPE)
-EOF
-
 # Helm setup
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     export XDG_CACHE_HOME=${COMP_DIR}/cache && rm -rf ${XDG_CACHE_HOME} && mkdir -p ${XDG_CACHE_HOME}
@@ -89,14 +84,73 @@ description: "Push helm charts to artifactory"
 EOF
 helm plugin list
 
+# Source the completion script after setting things up, so it can
+# take the configuration into consideration (such as plugin names)
+# Don't use the new source <() form as it does not work with bash v3
+source /dev/stdin <<- EOF
+   $(helm completion $SHELL_TYPE)
+EOF
+
 #####################
 # Static completions
 #####################
 
-# No need to test every command, as completion is handled
-# automatically by Cobra.
-# We focus on some smoke tests for the Cobra-handled completion
-# and also on code specific to this project.
+# Command and flag completion
+
+# First level
+_completionTests_verifyCompletion "helm " "completion create dependency env get history install lint list package plugin pull push push-artifactory repo rollback search show status template template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm sho" "show"
+_completionTests_verifyCompletion "helm --debug " "completion create dependency env get history install lint list package plugin pull push push-artifactory repo rollback search show status template template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm --debug sho" "show"
+_completionTests_verifyCompletion "helm -n ns " "completion create dependency env get history install lint list package plugin pull push push-artifactory repo rollback search show status template template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm -n ns sho" "show"
+_completionTests_verifyCompletion "helm --namespace ns " "completion create dependency env get history install lint list package plugin pull push push-artifactory repo rollback search show status template template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm --namespace ns sho" "show"
+
+# Second level
+_completionTests_verifyCompletion "helm plugin " "install list uninstall update"
+_completionTests_verifyCompletion "helm plugin u" "uninstall update"
+_completionTests_verifyCompletion "helm --debug plugin " "install list uninstall update"
+_completionTests_verifyCompletion "helm --debug plugin u" "uninstall update"
+_completionTests_verifyCompletion "helm -n ns plugin " "install list uninstall update"
+_completionTests_verifyCompletion "helm -n ns plugin u" "uninstall update"
+_completionTests_verifyCompletion "helm --namespace ns plugin " "install list uninstall update"
+_completionTests_verifyCompletion "helm --namespace ns plugin u" "uninstall update"
+_completionTests_verifyCompletion "helm plugin --debug " "install list uninstall update"
+_completionTests_verifyCompletion "helm plugin --debug u" "uninstall update"
+_completionTests_verifyCompletion "helm plugin -n ns " "install list uninstall update"
+_completionTests_verifyCompletion "helm plugin -n ns u" "uninstall update"
+_completionTests_verifyCompletion "helm plugin --namespace ns " "install list uninstall update"
+_completionTests_verifyCompletion "helm plugin --namespace ns u" "uninstall update"
+
+# With validArgs
+_completionTests_verifyCompletion "helm completion " "bash zsh"
+_completionTests_verifyCompletion "helm completion z" "zsh"
+_completionTests_verifyCompletion "helm --debug completion " "bash zsh"
+_completionTests_verifyCompletion "helm --debug completion z" "zsh"
+_completionTests_verifyCompletion "helm -n ns completion " "bash zsh"
+_completionTests_verifyCompletion "helm -n ns completion z" "zsh"
+_completionTests_verifyCompletion "helm --namespace ns completion " "bash zsh"
+_completionTests_verifyCompletion "helm --namespace ns completion z" "zsh"
+
+# Flags
+if [ "$SHELL_TYPE" = bash ]; then
+    _completionTests_verifyCompletion "helm -" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule= -n -v"
+    _completionTests_verifyCompletion "helm --" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule="
+    _completionTests_verifyCompletion "helm --s" "--skip-headers --skip-log-headers --stderrthreshold --stderrthreshold="
+    _completionTests_verifyCompletion "helm show -" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule= -n -v"
+    _completionTests_verifyCompletion "helm show --" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule="
+    _completionTests_verifyCompletion "helm show --s" "--skip-headers --skip-log-headers --stderrthreshold --stderrthreshold="
+else
+    _completionTests_verifyCompletion "helm -" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule -v"
+    _completionTests_verifyCompletion "helm --" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule"
+    _completionTests_verifyCompletion "helm --s" "--skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold"
+    _completionTests_verifyCompletion "helm show -" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule -v"
+    _completionTests_verifyCompletion "helm show --" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule"
+    _completionTests_verifyCompletion "helm show --s" "--skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold"
+fi
+# _completionTests_verifyCompletion "helm -n" "-n"
+# _completionTests_verifyCompletion "helm show -n" "-n"
 
 # Basic first level commands (static completion)
 _completionTests_verifyCompletion "helm stat" "status"
@@ -213,20 +267,20 @@ fi
 #     if [ "$SHELL_TYPE" = bash ]; then
 #         _completionTests_verifyCompletion "helm --namespace=" "casterly-rock white-harbor winterfell"
 #         _completionTests_verifyCompletion "helm --namespace=w" "white-harbor winterfell"
-#         _completionTests_verifyCompletion "helm ugrade --namespace=w" "white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm upgrade --namespace=w" "white-harbor winterfell"
 #         _completionTests_verifyCompletion "helm upgrade --namespace=" "casterly-rock white-harbor winterfell"
 #         _completionTests_verifyCompletion "helm -n=" "casterly-rock white-harbor winterfell"
 #         _completionTests_verifyCompletion "helm -n=w" "white-harbor winterfell"
-#         _completionTests_verifyCompletion "helm ugrade -n=w" "white-harbor winterfell"
+#         _completionTests_verifyCompletion "helm upgrade -n=w" "white-harbor winterfell"
 #         _completionTests_verifyCompletion "helm upgrade -n=" "casterly-rock white-harbor winterfell"
 #     else
 #         _completionTests_verifyCompletion "helm --namespace=" "--namespace=casterly-rock --namespace=white-harbor --namespace=winterfell"
 #         _completionTests_verifyCompletion "helm --namespace=w" "--namespace=white-harbor --namespace=winterfell"
-#         _completionTests_verifyCompletion "helm ugrade --namespace=w" "--namespace=white-harbor --namespace=winterfell"
+#         _completionTests_verifyCompletion "helm upgrade --namespace=w" "--namespace=white-harbor --namespace=winterfell"
 #         _completionTests_verifyCompletion "helm upgrade --namespace=" "--namespace=casterly-rock --namespace=white-harbor --namespace=winterfell"
 #         _completionTests_verifyCompletion "helm -n=" "-n=casterly-rock -n=white-harbor -n=winterfell"
 #         _completionTests_verifyCompletion "helm -n=w" "-n=white-harbor -n=winterfell"
-#         _completionTests_verifyCompletion "helm ugrade -n=w" "-n=white-harbor -n=winterfell"
+#         _completionTests_verifyCompletion "helm upgrade -n=w" "-n=white-harbor -n=winterfell"
 #         _completionTests_verifyCompletion "helm upgrade -n=" "-n=casterly-rock -n=white-harbor -n=winterfell"
 #     fi
 
@@ -236,7 +290,6 @@ fi
 #     _completionTests_verifyCompletion "helm --kube-context mycontext --namespace " "braavos old-valyria yunkai"
 #     _completionTests_verifyCompletion "helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 # fi
-
 # For the --output flag that applies to multiple commands
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Feature not available in v2

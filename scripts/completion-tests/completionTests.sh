@@ -59,12 +59,12 @@ helm repo update
 # Setup some plugins to allow testing completion of the helm plugin command
 # We inject the content of different plugin.yaml files directly to avoid having
 # to install a real plugin which can take a long time.
-PLUGIN_DIR=${PLUGIN_ROOT}/helm-template
+PLUGIN_DIR=${PLUGIN_ROOT}/helm-fullstatus
 mkdir -p ${PLUGIN_DIR}
 cat > ${PLUGIN_DIR}/plugin.yaml << EOF
-name: "template"
+name: "fullstatus"
 version: "2.5.1+2"
-description: "Render templates on the local client."
+description: "Provide detail about status."
 EOF
 
 PLUGIN_DIR=${PLUGIN_ROOT}/helm-push
@@ -98,13 +98,13 @@ EOF
 # Command and flag completion
 
 # First level
-_completionTests_verifyCompletion "helm " "completion create dependency env get history install lint list package plugin pull push push-artifactory repo rollback search show status template template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm " "completion create dependency env get fullstatus history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
 _completionTests_verifyCompletion "helm sho" "show"
-_completionTests_verifyCompletion "helm --debug " "completion create dependency env get history install lint list package plugin pull push push-artifactory repo rollback search show status template template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm --debug " "completion create dependency env get fullstatus history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
 _completionTests_verifyCompletion "helm --debug sho" "show"
-_completionTests_verifyCompletion "helm -n ns " "completion create dependency env get history install lint list package plugin pull push push-artifactory repo rollback search show status template template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm -n ns " "completion create dependency env get fullstatus history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
 _completionTests_verifyCompletion "helm -n ns sho" "show"
-_completionTests_verifyCompletion "helm --namespace ns " "completion create dependency env get history install lint list package plugin pull push push-artifactory repo rollback search show status template template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm --namespace ns " "completion create dependency env get fullstatus history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
 _completionTests_verifyCompletion "helm --namespace ns sho" "show"
 
 # Second level
@@ -229,9 +229,9 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
 fi
 
 # For the plugin command
-_completionTests_verifyCompletion "helm plugin uninstall " "template push push-artifactory"
+_completionTests_verifyCompletion "helm plugin uninstall " "fullstatus push push-artifactory"
 _completionTests_verifyCompletion "helm plugin uninstall pu" "push push-artifactory"
-_completionTests_verifyCompletion "helm plugin update " "template push push-artifactory"
+_completionTests_verifyCompletion "helm plugin update " "fullstatus push push-artifactory"
 _completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Make sure completion works as expected when there are no plugins

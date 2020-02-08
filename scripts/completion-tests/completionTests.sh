@@ -59,29 +59,100 @@ helm repo update
 # Setup some plugins to allow testing completion of the helm plugin command
 # We inject the content of different plugin.yaml files directly to avoid having
 # to install a real plugin which can take a long time.
-PLUGIN_DIR=${PLUGIN_ROOT}/helm-fullstatus
+
+###########
+# Plugin 1
+###########
+PLUGIN_DIR=${PLUGIN_ROOT}/helm-2to3
 mkdir -p ${PLUGIN_DIR}
+# The plugin file
 cat > ${PLUGIN_DIR}/plugin.yaml << EOF
-name: "fullstatus"
+name: "2to3"
 version: "2.5.1+2"
-description: "Provide detail about status."
+description: "Migrate from helm v2 to helm v3"
 EOF
 
+# The plugin's static completion file
+cat > ${PLUGIN_DIR}/completion.yaml << EOF
+commands:
+- name: cleanup
+  flags:
+  - r
+  - label
+  - cleanup
+  - s
+  - storage
+- name: convert
+  flags:
+  - l
+  - label
+  - s
+  - storage
+  - t
+- name: move
+  commands:
+  - name: config
+    flags:
+    - dry-run
+EOF
+
+# The plugin's dynamic completion file
+cat > ${PLUGIN_DIR}/plugin.complete << EOF
+#!/usr/bin/env sh
+
+if [ "\$2" = "config" ]; then
+    echo "case-config"
+    echo "gryffindor slytherin ravenclaw hufflepuff"
+    echo ":0"
+    exit
+fi
+
+if [ "\$HELM_NAMESPACE" != "default" ]; then
+    echo "case-ns"
+    # Check the namespace flag is not passed
+    echo "\$1"
+    # Check plugin variables are set
+    echo "\$HELM_NAMESPACE"
+    echo ":4"
+    exit
+fi
+
+if [ "\$2" = -s ]; then
+    echo "case-flag"
+    echo "lucius draco dobby"
+    echo ":4"
+    exit
+fi
+
+# Check missing directive
+echo "hermione harry ron"
+EOF
+chmod u+x ${PLUGIN_DIR}/plugin.complete
+
+###########
+# Plugin 2
+###########
 PLUGIN_DIR=${PLUGIN_ROOT}/helm-push
 mkdir -p ${PLUGIN_DIR}
+# The plugin file
 cat > ${PLUGIN_DIR}/plugin.yaml << EOF
 name: "push"
 version: "0.7.1"
 description: "Push chart package to ChartMuseum"
 EOF
 
+###########
+# Plugin 3
+###########
 PLUGIN_DIR=${PLUGIN_ROOT}/helm-push-artifactory
 mkdir -p ${PLUGIN_DIR}
+# The plugin file
 cat > ${PLUGIN_DIR}/plugin.yaml << EOF
 name: "push-artifactory"
 version: "0.3.0"
 description: "Push helm charts to artifactory"
 EOF
+
 helm plugin list
 
 # Source the completion script after setting things up, so it can
@@ -91,18 +162,27 @@ source /dev/stdin <<- EOF
    $(helm completion $SHELL_TYPE)
 EOF
 
+allHelmCommands="completion create dependency env 2to3 get history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
+if [ "$SHELL_TYPE" = bash ]; then
+    allHelmGlobalFlags="--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule= -n -v"
+    allHelmLongFlags="--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule="
+else
+    allHelmGlobalFlags="--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule -n -v"
+    allHelmLongFlags="--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule"
+fi
+
 #####################
 # Static completions
 #####################
 
 # Basic first level commands (static completion)
-_completionTests_verifyCompletion "helm " "completion create dependency env fullstatus get history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm " "$allHelmCommands"
 _completionTests_verifyCompletion "helm sho" "show"
-_completionTests_verifyCompletion "helm --debug " "completion create dependency env get fullstatus history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm --debug " "$allHelmCommands"
 _completionTests_verifyCompletion "helm --debug sho" "show"
-_completionTests_verifyCompletion "helm -n ns " "completion create dependency env get fullstatus history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm -n ns " "$allHelmCommands"
 _completionTests_verifyCompletion "helm -n ns sho" "show"
-_completionTests_verifyCompletion "helm --namespace ns " "completion create dependency env get fullstatus history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
+_completionTests_verifyCompletion "helm --namespace ns " "$allHelmCommands"
 _completionTests_verifyCompletion "helm --namespace ns sho" "show"
 _completionTests_verifyCompletion "helm stat" "status"
 _completionTests_verifyCompletion "helm status" "status"
@@ -167,21 +247,20 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
         _completionTests_verifyCompletion "helm --name" "--namespace --namespace --namespace"
     fi
 fi
+
+_completionTests_verifyCompletion "helm -" "$allHelmGlobalFlags"
+_completionTests_verifyCompletion "helm --" "$allHelmLongFlags"
+_completionTests_verifyCompletion "helm show -" "$allHelmGlobalFlags"
+_completionTests_verifyCompletion "helm show --" "$allHelmLongFlags"
+
 if [ "$SHELL_TYPE" = bash ]; then
-    _completionTests_verifyCompletion "helm -" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule= -n -v"
-    _completionTests_verifyCompletion "helm --" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule="
     _completionTests_verifyCompletion "helm --s" "--skip-headers --skip-log-headers --stderrthreshold --stderrthreshold="
-    _completionTests_verifyCompletion "helm show -" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule= -n -v"
-    _completionTests_verifyCompletion "helm show --" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule="
     _completionTests_verifyCompletion "helm show --s" "--skip-headers --skip-log-headers --stderrthreshold --stderrthreshold="
 else
-    _completionTests_verifyCompletion "helm -" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule -n -v"
-    _completionTests_verifyCompletion "helm --" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule"
     _completionTests_verifyCompletion "helm --s" "--skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold"
-    _completionTests_verifyCompletion "helm show -" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule -n -v"
-    _completionTests_verifyCompletion "helm show --" "--add-dir-header --alsologtostderr --debug --kube-context --kube-context --kube-context --kubeconfig --kubeconfig --kubeconfig --log-backtrace-at --log-backtrace-at --log-backtrace-at --log-dir --log-dir --log-dir --log-file --log-file --log-file --log-file-max-size --log-file-max-size --log-file-max-size --logtostderr --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold --v --v --v --vmodule --vmodule --vmodule"
     _completionTests_verifyCompletion "helm show --s" "--skip-headers --skip-log-headers --stderrthreshold --stderrthreshold --stderrthreshold"
 fi
+
 _completionTests_verifyCompletion "helm -n" "-n"
 _completionTests_verifyCompletion "helm show -n" "-n"
 
@@ -207,6 +286,18 @@ fi
 _completionTests_verifyCompletion "helm ls" ""
 _completionTests_verifyCompletion "helm dependenci" ""
 
+# Static completion for plugins
+_completionTests_verifyCompletion "helm push " ""
+_completionTests_verifyCompletion "helm 2to3 " "cleanup convert move"
+_completionTests_verifyCompletion "helm 2to3 c" "cleanup convert"
+_completionTests_verifyCompletion "helm 2to3 move " "config"
+
+_completionTests_verifyCompletion "helm 2to3 cleanup -" "$allHelmGlobalFlags -r -s --label --cleanup --storage"
+# For plugin completion, when there are more short flags than long flags, a long flag is created for the extra short flags
+# So here we expect the extra --t
+_completionTests_verifyCompletion "helm 2to3 convert -" "$allHelmGlobalFlags -l -s -t --t --label --storage"
+_completionTests_verifyCompletion "helm 2to3 move config --" "$allHelmLongFlags --dry-run"
+
 #####################
 # Dynamic completions
 #####################
@@ -222,9 +313,9 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
 fi
 
 # For the plugin command
-_completionTests_verifyCompletion "helm plugin uninstall " "fullstatus push push-artifactory"
+_completionTests_verifyCompletion "helm plugin uninstall " "2to3 push push-artifactory"
 _completionTests_verifyCompletion "helm plugin uninstall pu" "push push-artifactory"
-_completionTests_verifyCompletion "helm plugin update " "fullstatus push push-artifactory"
+_completionTests_verifyCompletion "helm plugin update " "2to3 push push-artifactory"
 _completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Make sure completion works as expected when there are no plugins
@@ -334,6 +425,13 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
 
     \rm $tmpFiles
 fi
+
+# Dynamic completion for plugins
+_completionTests_verifyCompletion "helm push " ""
+_completionTests_verifyCompletion "helm 2to3 move config g" "gryffindor"
+_completionTests_verifyCompletion "helm 2to3 -n dumbledore convert " "case-ns convert dumbledore"
+_completionTests_verifyCompletion "helm 2to3 convert -s flag d" "dobby draco"
+_completionTests_verifyCompletion "helm 2to3 convert " "hermione harry ron"
 
 ##############################################################
 # Completion with helm called through an alias or using a path

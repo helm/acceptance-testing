@@ -56,6 +56,7 @@ mkdir -p ${COMP_DIR}/lib
 mkdir -p ${COMP_DIR}/bin
 cp ${SCRIPT_DIR}/${COMP_SCRIPT_NAME} ${COMP_DIR}
 cp ${SCRIPT_DIR}/lib/completionTests-base.sh ${COMP_DIR}/lib
+cp ${SCRIPT_DIR}/releases.yaml ${COMP_DIR}
 
 if [[ "${GITHUB_SHA}" == "" ]]; then
   CHECK_BINARY_PATH="$(cd ${BINARY_PATH_DOCKER} && pwd)/${BINARY_NAME}"

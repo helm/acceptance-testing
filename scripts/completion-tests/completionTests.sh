@@ -21,6 +21,11 @@ source ${COMP_DIR}/lib/completionTests-base.sh
 
 export PATH=${COMP_DIR}/bin:$PATH
 
+# Use the memory driver with pre-defined releases to easily
+# test release name completion
+export HELM_DRIVER=memory
+export HELM_MEMORY_DRIVER_DATA=${COMP_DIR}/releases.yaml
+
 # Helm setup
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     export XDG_CACHE_HOME=${COMP_DIR}/cache && rm -rf ${XDG_CACHE_HOME} && mkdir -p ${XDG_CACHE_HOME}
@@ -301,6 +306,16 @@ _completionTests_verifyCompletion "helm 2to3 move config --" "$allHelmLongFlags 
 #####################
 # Dynamic completions
 #####################
+
+# For release name completion
+_completionTests_verifyCompletion "helm status " "athos porthos aramis"
+_completionTests_verifyCompletion "helm history a" "athos aramis"
+_completionTests_verifyCompletion "helm uninstall a" "athos aramis"
+_completionTests_verifyCompletion "helm upgrade a" "athos aramis"
+_completionTests_verifyCompletion "helm get manifest -n default " "athos porthos aramis"
+_completionTests_verifyCompletion "helm --namespace gascony get manifest " "dartagnan"
+_completionTests_verifyCompletion "helm --namespace gascony test d" "dartagnan"
+_completionTests_verifyCompletion "helm rollback d" ""
 
 # For the repo command
 _completionTests_verifyCompletion "helm repo remove " "stable zztest1 zztest2"

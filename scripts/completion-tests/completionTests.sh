@@ -106,31 +106,38 @@ cat > ${PLUGIN_DIR}/plugin.complete << EOF
 #!/usr/bin/env sh
 
 if [ "\$2" = "config" ]; then
-    echo "case-config"
-    echo "gryffindor slytherin ravenclaw hufflepuff"
-    echo ":0"
+    echo case-config
+    echo gryffindor
+    echo slytherin
+    echo ravenclaw
+    echo hufflepuff
+    echo :0
     exit
 fi
 
 if [ "\$HELM_NAMESPACE" != "default" ]; then
-    echo "case-ns"
+    echo case-ns
     # Check the namespace flag is not passed
-    echo "\$1"
+    echo \$1
     # Check plugin variables are set
-    echo "\$HELM_NAMESPACE"
-    echo ":4"
+    echo \$HELM_NAMESPACE
+    echo :4
     exit
 fi
 
 if [ "\$2" = -s ]; then
-    echo "case-flag"
-    echo "lucius draco dobby"
-    echo ":4"
+    echo case-flag
+    echo lucius
+    echo draco
+    echo dobby
+    echo :4
     exit
 fi
 
 # Check missing directive
-echo "hermione harry ron"
+echo hermione
+echo harry
+echo ron
 EOF
 chmod u+x ${PLUGIN_DIR}/plugin.complete
 
@@ -146,6 +153,30 @@ version: "0.7.1"
 description: "Push chart package to ChartMuseum"
 EOF
 
+# A plugin's static completion file without a dynamic completion file
+cat > ${PLUGIN_DIR}/completion.yaml << EOF
+commands:
+- name: cleanup
+  flags:
+  - r
+  - label
+  - cleanup
+  - s
+  - storage
+- name: convert
+  flags:
+  - l
+  - label
+  - s
+  - storage
+  - t
+- name: move
+  commands:
+  - name: config
+    flags:
+    - dry-run
+EOF
+
 ###########
 # Plugin 3
 ###########
@@ -157,6 +188,46 @@ name: "push-artifactory"
 version: "0.3.0"
 description: "Push helm charts to artifactory"
 EOF
+
+# A plugin's dynamic completion file without a static completion file
+cat > ${PLUGIN_DIR}/plugin.complete << EOF
+#!/usr/bin/env sh
+
+if [ "\$2" = "config" ]; then
+    echo case-config
+    echo gryffindor
+    echo slytherin
+    echo ravenclaw
+    echo hufflepuff
+    echo :0
+    exit
+fi
+
+if [ "\$HELM_NAMESPACE" != "default" ]; then
+    echo case-ns
+    # Check the namespace flag is not passed
+    echo \$1
+    # Check plugin variables are set
+    echo \$HELM_NAMESPACE
+    echo :4
+    exit
+fi
+
+if [ "\$2" = -s ]; then
+    echo case-flag
+    echo lucius
+    echo draco
+    echo dobby
+    echo :4
+    exit
+fi
+
+# Check missing directive
+echo hermione
+echo harry
+echo ron
+EOF
+chmod u+x ${PLUGIN_DIR}/plugin.complete
 
 helm plugin list
 
@@ -209,7 +280,7 @@ else
     _completionTests_verifyCompletion "helm get " "all hooks manifest notes values"
 fi
 _completionTests_verifyCompletion "helm get h" "hooks"
-_completionTests_verifyCompletion "helm completion " "bash zsh"
+_completionTests_verifyCompletion "helm completion " "bash zsh fish"
 _completionTests_verifyCompletion "helm completion z" "zsh"
 _completionTests_verifyCompletion "helm plugin " "install list uninstall update"
 _completionTests_verifyCompletion "helm plugin u" "uninstall update"
@@ -227,13 +298,13 @@ _completionTests_verifyCompletion "helm plugin --namespace ns " "install list un
 _completionTests_verifyCompletion "helm plugin --namespace ns u" "uninstall update"
 
 # With validArgs
-_completionTests_verifyCompletion "helm completion " "bash zsh"
+_completionTests_verifyCompletion "helm completion " "bash zsh fish"
 _completionTests_verifyCompletion "helm completion z" "zsh"
-_completionTests_verifyCompletion "helm --debug completion " "bash zsh"
+_completionTests_verifyCompletion "helm --debug completion " "bash zsh fish"
 _completionTests_verifyCompletion "helm --debug completion z" "zsh"
-_completionTests_verifyCompletion "helm -n ns completion " "bash zsh"
+_completionTests_verifyCompletion "helm -n ns completion " "bash zsh fish"
 _completionTests_verifyCompletion "helm -n ns completion z" "zsh"
-_completionTests_verifyCompletion "helm --namespace ns completion " "bash zsh"
+_completionTests_verifyCompletion "helm --namespace ns completion " "bash zsh fish"
 _completionTests_verifyCompletion "helm --namespace ns completion z" "zsh"
 
 # Completion of flags
@@ -294,16 +365,21 @@ _completionTests_verifyCompletion "helm ls" ""
 _completionTests_verifyCompletion "helm dependenci" ""
 
 # Static completion for plugins
-_completionTests_verifyCompletion "helm push " ""
 _completionTests_verifyCompletion "helm 2to3 " "cleanup convert move"
 _completionTests_verifyCompletion "helm 2to3 c" "cleanup convert"
 _completionTests_verifyCompletion "helm 2to3 move " "config"
+_completionTests_verifyCompletion "helm push " "cleanup convert move"
+_completionTests_verifyCompletion "helm push c" "cleanup convert"
+_completionTests_verifyCompletion "helm push move " "config"
 
 _completionTests_verifyCompletion "helm 2to3 cleanup -" "$allHelmGlobalFlags -r -s --label --cleanup --storage"
+_completionTests_verifyCompletion "helm push cleanup -" "$allHelmGlobalFlags -r -s --label --cleanup --storage"
 # For plugin completion, when there are more short flags than long flags, a long flag is created for the extra short flags
 # So here we expect the extra --t
 _completionTests_verifyCompletion "helm 2to3 convert -" "$allHelmGlobalFlags -l -s -t --t --label --storage"
 _completionTests_verifyCompletion "helm 2to3 move config --" "$allHelmLongFlags --dry-run"
+_completionTests_verifyCompletion "helm push convert -" "$allHelmGlobalFlags -l -s -t --t --label --storage"
+_completionTests_verifyCompletion "helm push move config --" "$allHelmLongFlags --dry-run"
 
 #####################
 # Dynamic completions
@@ -444,11 +520,14 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
 fi
 
 # Dynamic completion for plugins
-_completionTests_verifyCompletion "helm push " ""
 _completionTests_verifyCompletion "helm 2to3 move config g" "gryffindor"
 _completionTests_verifyCompletion "helm 2to3 -n dumbledore convert " "case-ns convert dumbledore"
 _completionTests_verifyCompletion "helm 2to3 convert -s flag d" "dobby draco"
 _completionTests_verifyCompletion "helm 2to3 convert " "hermione harry ron"
+_completionTests_verifyCompletion "helm push-artifactory move config g" "gryffindor"
+_completionTests_verifyCompletion "helm push-artifactory -n dumbledore convert " "case-ns convert dumbledore"
+_completionTests_verifyCompletion "helm push-artifactory convert -s flag d" "dobby draco"
+_completionTests_verifyCompletion "helm push-artifactory convert " "hermione harry ron"
 
 ##############################################################
 # Completion with helm called through an alias or using a path

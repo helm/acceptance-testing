@@ -71,41 +71,6 @@ else
   cp $(which helm-docker) ${COMP_DIR}/bin/helm
 fi
 
-# config file stubs
-cat > ${COMP_DIR}/config.dev1 << EOF
-kind: Config
-apiVersion: v1
-contexts:
-- context:
-  name: dev1
-current-context: dev1
-EOF
-cat > ${COMP_DIR}/config.dev2 << EOF
-kind: Config
-apiVersion: v1
-contexts:
-- context:
-  name: dev2
-current-context: dev2
-EOF
-cat > ${COMP_DIR}/config.accept << EOF
-kind: Config
-apiVersion: v1
-contexts:
-- context:
-  name: accept
-current-context: accept
-EOF
-cat > ${COMP_DIR}/config.prod << EOF
-kind: Config
-apiVersion: v1
-contexts:
-- context:
-  name: prod
-current-context: prod
-EOF
-export KUBECONFIG=${COMP_DIR}/config.dev1:${COMP_DIR}/config.dev2:${COMP_DIR}/config.accept:${COMP_DIR}/config.prod
-
 # Now run all tests, even if there is a failure.
 # But remember if there was any failure to report it at the end.
 set +e
@@ -127,7 +92,6 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
            ${BASH4_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -153,7 +117,6 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
            ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -172,7 +135,6 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
            ${BASH_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -191,7 +153,6 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################
@@ -210,7 +171,6 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
            ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
 ########################################

@@ -42,6 +42,10 @@ else
     PLUGIN_ROOT=${HELM_HOME}/plugins
 fi
 
+##############################################################
+# REPOS SETUP
+##############################################################
+
 # Setup some repos to allow testing completion of the helm repo command
 # We inject the content of the repositories.yaml file directly to avoid requiring
 # an internet connection if we were to use 'helm repo add'
@@ -60,6 +64,10 @@ EOF
 helm repo list
 # Fetch the details of the stable repo
 helm repo update
+
+##############################################################
+# PLUGINS SETUP
+##############################################################
 
 # Setup some plugins to allow testing completion of the helm plugin command
 # We inject the content of different plugin.yaml files directly to avoid having
@@ -230,6 +238,45 @@ EOF
 chmod u+x ${PLUGIN_DIR}/plugin.complete
 
 helm plugin list
+
+##############################################################
+# CONTEXTS SETUP
+##############################################################
+
+# config file stubs
+cat > ${COMP_DIR}/config.dev1 << EOF
+kind: Config
+apiVersion: v1
+contexts:
+- context:
+  name: dev1
+current-context: dev1
+EOF
+cat > ${COMP_DIR}/config.dev2 << EOF
+kind: Config
+apiVersion: v1
+contexts:
+- context:
+  name: dev2
+current-context: dev2
+EOF
+cat > ${COMP_DIR}/config.accept << EOF
+kind: Config
+apiVersion: v1
+contexts:
+- context:
+  name: accept
+current-context: accept
+EOF
+cat > ${COMP_DIR}/config.prod << EOF
+kind: Config
+apiVersion: v1
+contexts:
+- context:
+  name: prod
+current-context: prod
+EOF
+export KUBECONFIG=${COMP_DIR}/config.dev1:${COMP_DIR}/config.dev2:${COMP_DIR}/config.accept:${COMP_DIR}/config.prod
 
 # Source the completion script after setting things up, so it can
 # take the configuration into consideration (such as plugin names)

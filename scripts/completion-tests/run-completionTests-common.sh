@@ -33,6 +33,11 @@
 # # _completionTests_verifyCompletion "helm stat" "status"
 #
 
+# Don't use the new source <() form as it does not work with bash v3
+source /dev/stdin <<- EOF
+   $(helm completion ${SHELL_TYPE})
+EOF
+
 # Global variable to keep track of if a test has failed.
 _completionTests_TEST_FAILED=0
 
@@ -167,35 +172,3 @@ _completionTests_exit() {
 compopt() {
    :
 }
-
-# Start of script
-SHELL_TYPE=bash
-if [ ! -z "$BASH_VERSION" ];then
-   echo "===================================================="
-   echo "Running completions tests on $(uname) with bash $BASH_VERSION"
-   echo "===================================================="
-
-   # Enable aliases to work even though we are in a script (non-interactive shell).
-   # This allows to test completion with aliases.
-   # Only needed for bash, zsh does this automatically.
-   shopt -s expand_aliases
-
-   bashCompletionScript="/usr/share/bash-completion/bash_completion"
-   if [ $(uname) = "Darwin" ]; then
-      bashCompletionScript="/usr/local/etc/bash_completion"
-   fi
-
-   source ${bashCompletionScript}
-else
-   SHELL_TYPE=zsh
-
-   echo "===================================================="
-   echo "Running completions tests on $(uname) with zsh $ZSH_VERSION"
-   echo "===================================================="
-   autoload -Uz compinit
-   compinit
-   # When zsh calls real completion, it sets some options and emulates sh.
-   # We need to do the same.
-   emulate -L sh
-   setopt kshglob noshglob braceexpand
-fi

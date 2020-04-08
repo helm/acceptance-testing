@@ -182,7 +182,9 @@ fi
 
 # Basic first level commands (static completion)
 _completionTests_verifyCompletion "helm " "$allHelmCommands"
+_completionTests_verifyCompletion "helm help " "$allHelmCommands"
 _completionTests_verifyCompletion "helm sho" "show"
+_completionTests_verifyCompletion "helm help sho" "show"
 _completionTests_verifyCompletion "helm --debug " "$allHelmCommands"
 _completionTests_verifyCompletion "helm --debug sho" "show"
 _completionTests_verifyCompletion "helm -n ns " "$allHelmCommands"

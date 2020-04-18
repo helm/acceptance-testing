@@ -48,14 +48,24 @@ fi
 export COMP_DIR=$(mktemp -d ${ROBOT_OUTPUT_DIR}/helm-acceptance-completion.XXXXXX)
 trap "rm -rf ${COMP_DIR}" EXIT
 
-COMP_SCRIPT_NAME=completionTests.sh
+COMP_SCRIPT_NAME=setup-completion.sh
 COMP_SCRIPT=${COMP_DIR}/${COMP_SCRIPT_NAME}
 
 rm -rf ${COMP_DIR}
 mkdir -p ${COMP_DIR}/lib
 mkdir -p ${COMP_DIR}/bin
 cp ${SCRIPT_DIR}/${COMP_SCRIPT_NAME} ${COMP_DIR}
-cp ${SCRIPT_DIR}/lib/completionTests-base.sh ${COMP_DIR}/lib
+
+cp ${SCRIPT_DIR}/run-completionTests-common.sh ${COMP_DIR}
+cp ${SCRIPT_DIR}/run-completionTests.bash ${COMP_DIR}
+cp ${SCRIPT_DIR}/run-completionTests.zsh ${COMP_DIR}
+cp ${SCRIPT_DIR}/run-completionTests.fish ${COMP_DIR}
+
+cp ${SCRIPT_DIR}/completionTests-common.sh ${COMP_DIR}
+cp ${SCRIPT_DIR}/completionTests.bash ${COMP_DIR}
+cp ${SCRIPT_DIR}/completionTests.zsh ${COMP_DIR}
+cp ${SCRIPT_DIR}/completionTests.fish ${COMP_DIR}
+
 cp ${SCRIPT_DIR}/releases.yaml ${COMP_DIR}
 
 if [[ "${GITHUB_SHA}" == "" ]]; then
@@ -70,41 +80,6 @@ else
   echo "Running on GitHub Actions CI - using system-wide Helm 3 binary."
   cp $(which helm-docker) ${COMP_DIR}/bin/helm
 fi
-
-# config file stubs
-cat > ${COMP_DIR}/config.dev1 << EOF
-kind: Config
-apiVersion: v1
-contexts:
-- context:
-  name: dev1
-current-context: dev1
-EOF
-cat > ${COMP_DIR}/config.dev2 << EOF
-kind: Config
-apiVersion: v1
-contexts:
-- context:
-  name: dev2
-current-context: dev2
-EOF
-cat > ${COMP_DIR}/config.accept << EOF
-kind: Config
-apiVersion: v1
-contexts:
-- context:
-  name: accept
-current-context: accept
-EOF
-cat > ${COMP_DIR}/config.prod << EOF
-kind: Config
-apiVersion: v1
-contexts:
-- context:
-  name: prod
-current-context: prod
-EOF
-export KUBECONFIG=${COMP_DIR}/config.dev1:${COMP_DIR}/config.dev2:${COMP_DIR}/config.accept:${COMP_DIR}/config.prod
 
 # Now run all tests, even if there is a failure.
 # But remember if there was any failure to report it at the end.
@@ -127,8 +102,7 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${BASH4_IMAGE} bash -c "source ${COMP_SCRIPT}"
+           ${BASH4_IMAGE} ${COMP_SCRIPT} bash
 
 ########################################
 # Bash 3.2 completion tests
@@ -153,8 +127,7 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
+           ${BASH3_IMAGE} ${COMP_SCRIPT} bash
 
 ########################################
 # Bash centos completion tests
@@ -172,8 +145,7 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${BASH_IMAGE} bash -c "source ${COMP_SCRIPT}"
+           ${BASH_IMAGE} ${COMP_SCRIPT} bash
 
 ########################################
 # Zsh completion tests
@@ -191,8 +163,7 @@ docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
+           ${ZSH_IMAGE} ${COMP_SCRIPT} zsh
 
 ########################################
 # Zsh alpine/busybox completion tests
@@ -203,15 +174,32 @@ ZSH_IMAGE=completion-zsh-alpine
 echo;echo;
 docker build -t ${ZSH_IMAGE} - <<- EOF
    FROM alpine
-   RUN apk update && apk add zsh ca-certificates
+   RUN apk update && apk add bash zsh ca-certificates
 EOF
 docker run --rm \
            -v ${COMP_DIR}:${COMP_DIR} \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
            -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
+           ${ZSH_IMAGE} ${COMP_SCRIPT} zsh
+
+########################################
+# Fish completion tests
+########################################
+FISH_IMAGE=completion-fish
+
+docker build -t ${FISH_IMAGE} - <<- EOF
+   FROM centos
+   RUN cd /etc/yum.repos.d/ && \
+       curl -O https://download.opensuse.org/repositories/shells:/fish/CentOS_8/shells:fish.repo && \
+       yum install -y fish which
+EOF
+docker run --rm \
+           -v ${COMP_DIR}:${COMP_DIR} \
+           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+           -e COMP_DIR=${COMP_DIR} \
+           ${FISH_IMAGE} ${COMP_SCRIPT} fish
 
 ########################################
 # MacOS completion tests
@@ -233,13 +221,19 @@ if [ "$(uname)" == "Darwin" ]; then
    if which bash>/dev/null && [ -f /usr/local/etc/bash_completion ]; then
       echo;echo;
       echo "Completion tests for bash running locally"
-      bash -c "source ${COMP_SCRIPT}"
+      ${COMP_SCRIPT} bash
    fi
 
    if which zsh>/dev/null; then
       echo;echo;
       echo "Completion tests for zsh running locally"
-      zsh -c "source ${COMP_SCRIPT}"
+      ${COMP_SCRIPT} zsh
+   fi
+
+   if which fish>/dev/null; then
+      echo;echo;
+      echo "Completion tests for fish running locally"
+      ${COMP_SCRIPT} fish
    fi
 fi
 

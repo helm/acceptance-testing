@@ -34,14 +34,25 @@ export -f set_shell_debug_level
 set_shell_debug_level 2
 
 BINARY_NAME=helm
-BINARY_ROOT=${ROBOT_HELM_PATH:-${SCRIPT_DIR}/../../../helm/bin}
-BINARY_PATH_DOCKER=${BINARY_ROOT}/../_dist/linux-amd64
-BINARY_PATH_LOCAL=${BINARY_ROOT}
 
-if [ -z $(which docker) ]; then
-  echo "Missing 'docker' client which is required for these tests";
-  exit 2;
-fi
+case $(uname) in
+   "Linux")
+      BINARY_ROOT=${ROBOT_HELM_PATH:-$(dirname $(which helm))}
+      BINARY_PATH_DOCKER=${BINARY_ROOT}
+      ;;
+   "Darwin")
+      BINARY_ROOT=${ROBOT_HELM_PATH:-$(dirname $(which helm))}
+      BINARY_PATH_LOCAL=${BINARY_ROOT}
+      # To run Helm Linux based bin tests:
+      # Make sure you've helm repo in parallel to helm-acceptance-test.
+      # and you've checkedout appropriate branch and ran `make build-cross`.
+      # If you wanna test any external linux bin,
+      # e.g. downloaded from some helm downstream project,
+      # put in `helm/_dist/linux-amd64/` path
+      BINARY_PATH_DOCKER=${SCRIPT_DIR}/../../../helm/_dist/linux-amd64
+      ;;
+esac
+
 
 # Only use the -d flag for mktemp as many other flags don't
 # work on every plateform
@@ -113,105 +124,119 @@ GOT_FAILURE=0
 trap "GOT_FAILURE=1" ERR
 
 ########################################
-# Bash 4 completion tests
+# Linux based OS completion tests
 ########################################
-BASH4_IMAGE=completion-bash4
+# Skip if helm linux based bin is not present
+if [[ -f ${BINARY_PATH_DOCKER}/${BINARY_NAME} ]]; then
 
-echo;echo;
-docker build -t ${BASH4_IMAGE} -f - ${COMP_DIR} <<- EOF
-   FROM bash:4.4
-   RUN apk update && apk add bash-completion ca-certificates
-   COPY ./ ${COMP_DIR}/
+   # Check docker client before running tests in docker container.
+   if [ -z $(which docker) ]; then
+      echo "Missing 'docker' client which is required for these tests";
+      exit 2;
+   fi
+
+   ########################################
+   # Bash 4 completion tests
+   ########################################
+   BASH4_IMAGE=completion-bash4
+
+   echo;echo;
+   docker build -t ${BASH4_IMAGE} -f - ${COMP_DIR} <<- EOF
+      FROM bash:4.4
+      RUN apk update && apk add bash-completion ca-certificates
+      COPY ./ ${COMP_DIR}/
 EOF
-docker run --rm \
-           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-           -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${BASH4_IMAGE} bash -c "source ${COMP_SCRIPT}"
+   docker run --rm \
+              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+              -e COMP_DIR=${COMP_DIR} \
+              -e KUBECONFIG=${KUBECONFIG} \
+              ${BASH4_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
-########################################
-# Bash 3.2 completion tests
-########################################
-# We choose version 3.2 because we want some Bash 3 version and 3.2
-# is the version by default on MacOS.  So testing that version
-# gives us a bit of coverage for MacOS.
-BASH3_IMAGE=completion-bash3
+   ########################################
+   # Bash 3.2 completion tests
+   ########################################
+   # We choose version 3.2 because we want some Bash 3 version and 3.2
+   # is the version by default on MacOS.  So testing that version
+   # gives us a bit of coverage for MacOS.
+   BASH3_IMAGE=completion-bash3
 
-echo;echo;
-docker build -t ${BASH3_IMAGE} -f - ${COMP_DIR} <<- EOF
-   FROM bash:3.2
-   RUN apk update && apk add ca-certificates
-   # For bash 3.2, the bash-completion package required is version 1.3
-   RUN mkdir /usr/share/bash-completion && \
-       wget -qO - https://github.com/scop/bash-completion/archive/1.3.tar.gz | \
-            tar xvz -C /usr/share/bash-completion --strip-components 1 bash-completion-1.3/bash_completion
-   COPY ./ ${COMP_DIR}/
+   echo;echo;
+   docker build -t ${BASH3_IMAGE} -f - ${COMP_DIR} <<- EOF
+      FROM bash:3.2
+      RUN apk update && apk add ca-certificates
+      # For bash 3.2, the bash-completion package required is version 1.3
+      RUN mkdir /usr/share/bash-completion && \
+         wget -qO - https://github.com/scop/bash-completion/archive/1.3.tar.gz | \
+               tar xvz -C /usr/share/bash-completion --strip-components 1 bash-completion-1.3/bash_completion
+      COPY ./ ${COMP_DIR}/
 EOF
-docker run --rm \
-           -e BASH_COMPLETION=/usr/share/bash-completion \
-           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-           -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
+   docker run --rm \
+              -e BASH_COMPLETION=/usr/share/bash-completion \
+              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+              -e COMP_DIR=${COMP_DIR} \
+              -e KUBECONFIG=${KUBECONFIG} \
+              ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
-########################################
-# Bash centos completion tests
-# https://github.com/helm/helm/pull/7304
-########################################
-BASH_IMAGE=completion-bash-centos
+   ########################################
+   # Bash centos completion tests
+   # https://github.com/helm/helm/pull/7304
+   ########################################
+   BASH_IMAGE=completion-bash-centos
 
-echo;echo;
-docker build -t ${BASH_IMAGE} -f - ${COMP_DIR} <<- EOF
-   FROM centos
-   RUN yum install -y bash-completion which
-   COPY ./ ${COMP_DIR}/
+   echo;echo;
+   docker build -t ${BASH_IMAGE} -f - ${COMP_DIR} <<- EOF
+      FROM centos
+      RUN yum install -y bash-completion which
+      COPY ./ ${COMP_DIR}/
 EOF
-docker run --rm \
-           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-           -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${BASH_IMAGE} bash -c "source ${COMP_SCRIPT}"
+   docker run --rm \
+              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+              -e COMP_DIR=${COMP_DIR} \
+              -e KUBECONFIG=${KUBECONFIG} \
+              ${BASH_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
-########################################
-# Zsh completion tests
-########################################
-ZSH_IMAGE=completion-zsh
+   ########################################
+   # Zsh completion tests
+   ########################################
+   ZSH_IMAGE=completion-zsh
 
-echo;echo;
-docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
-   FROM zshusers/zsh:5.7
-   # This will install the SSL certificates necessary for helm repo update to work
-   RUN apt-get update && apt-get install -y wget
-   COPY ./ ${COMP_DIR}/
+   echo;echo;
+   docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
+      FROM zshusers/zsh:5.7
+      # This will install the SSL certificates necessary for helm repo update to work
+      RUN apt-get update && apt-get install -y wget
+      COPY ./ ${COMP_DIR}/
 EOF
-docker run --rm \
-           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-           -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
+   docker run --rm \
+              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+              -e COMP_DIR=${COMP_DIR} \
+              -e KUBECONFIG=${KUBECONFIG} \
+              ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
 
-########################################
-# Zsh alpine/busybox completion tests
-# https://github.com/helm/helm/pull/6327
-########################################
-ZSH_IMAGE=completion-zsh-alpine
+   ########################################
+   # Zsh alpine/busybox completion tests
+   # https://github.com/helm/helm/pull/6327
+   ########################################
+   ZSH_IMAGE=completion-zsh-alpine
 
-echo;echo;
-docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
-   FROM alpine
-   RUN apk update && apk add zsh ca-certificates
-   COPY ./ ${COMP_DIR}/
+   echo;echo;
+   docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
+      FROM alpine
+      RUN apk update && apk add zsh ca-certificates
+      COPY ./ ${COMP_DIR}/
 EOF
-docker run --rm \
-           -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-           -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-           -e COMP_DIR=${COMP_DIR} \
-           -e KUBECONFIG=${KUBECONFIG} \
-           ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
+   docker run --rm \
+              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+              -e COMP_DIR=${COMP_DIR} \
+              -e KUBECONFIG=${KUBECONFIG} \
+              ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
+
+fi
 
 ########################################
 # MacOS completion tests

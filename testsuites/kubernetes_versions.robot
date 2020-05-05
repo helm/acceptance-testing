@@ -35,16 +35,14 @@ Suite Setup       Suite Setup
 Suite Teardown    Suite Teardown
 
 *** Test Cases ***
-#Helm works with Kubernetes 1.16.1
-#    Test Helm on Kubernetes version   1.16.1
+Helm works with Kubernetes 1.16.1
+    Test Helm on Kubernetes version   1.16.1
 
 Helm works with Kubernetes 1.15.3
     Test Helm on Kubernetes version   1.15.3
 
-Helm works with Kubernetes 1.14.6
-    Test Helm on Kubernetes version   1.14.6
-
 *** Keyword ***
+
 Test Helm on Kubernetes version
     Require cluster  True
 
@@ -85,7 +83,7 @@ Verify --wait flag works as expected
 
     Kubectl.Pods with prefix are running    default    wait-flag-good-nginx-ext-    3
     Kubectl.Return code should be   0
-    Kubectl.Pods with prefix are running    default    wait-flag-good-nginx-fluentd-es-    1
+    Kubectl.Deamon Set Pods With Prefix    default    wait-flag-good-nginx-fluentd-es-
     Kubectl.Return code should be   0
     Kubectl.Pods with prefix are running    default    wait-flag-good-nginx-v1-    3
     Kubectl.Return code should be   0

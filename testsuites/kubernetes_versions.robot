@@ -41,6 +41,9 @@ Helm works with Kubernetes 1.16.1
 Helm works with Kubernetes 1.15.3
     Test Helm on Kubernetes version   1.15.3
 
+Helm works with Kubernetes 1.14.6
+    Test Helm on Kubernetes version   1.14.6
+
 *** Keyword ***
 
 Test Helm on Kubernetes version

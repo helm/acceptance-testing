@@ -167,7 +167,7 @@ source /dev/stdin <<- EOF
    $(helm completion $SHELL_TYPE)
 EOF
 
-allHelmCommands="completion create dependency env 2to3 get history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
+allHelmCommands="completion create dependency env 2to3 get history install lint list options package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
 if [ "$SHELL_TYPE" = bash ]; then
     allHelmGlobalFlags="--add-dir-header --alsologtostderr --debug --kube-apiserver --kube-apiserver= --kube-context --kube-context= --kube-token --kube-token= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule= -n -v"
     allHelmLongFlags="--add-dir-header --alsologtostderr --debug --kube-apiserver --kube-apiserver= --kube-context --kube-context= --kube-token --kube-token= --kubeconfig --kubeconfig= --log-backtrace-at --log-backtrace-at= --log-dir --log-dir= --log-file --log-file-max-size --log-file-max-size= --log-file= --logtostderr --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= --skip-headers --skip-log-headers --stderrthreshold --stderrthreshold= --v --v= --vmodule --vmodule="
@@ -398,7 +398,7 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Also test that the list of outputs matches what the helm message gives.
     # This is an imperfect way of detecting if the output format list has changed, but
     # the completion wasn't updated to match.
-    outputFormats=$(helm repo list -h | grep -- --output | cut -d: -f2 | cut -d '(' -f1 | sed s/,//g)
+    outputFormats=$(helm repo list -h | grep -- --output | cut -d: -f3 | cut -d '(' -f1 | sed s/,//g)
     _completionTests_verifyCompletion "helm repo list --output " "${outputFormats}"
     _completionTests_verifyCompletion "helm install --output " "${outputFormats}"
     _completionTests_verifyCompletion "helm history -o " "${outputFormats}"

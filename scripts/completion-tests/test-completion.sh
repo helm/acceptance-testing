@@ -118,15 +118,11 @@ trap "GOT_FAILURE=1" ERR
 BASH4_IMAGE=completion-bash4
 
 echo;echo;
-DF=$(mktemp ./DF.XXXXX)
-
-echo "FROM bash:4.4
-RUN apk update && apk add bash-completion ca-certificates
-COPY ./ ${COMP_DIR}/
-" > $DF
-
-docker build -f $DF -t ${BASH4_IMAGE} ${COMP_DIR}
-rm -f $DF
+docker build -t ${BASH4_IMAGE} -f - ${COMP_DIR} <<- EOF
+   FROM bash:4.4
+   RUN apk update && apk add bash-completion ca-certificates
+   COPY ./ ${COMP_DIR}/
+EOF
 docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
@@ -143,20 +139,15 @@ docker run --rm \
 BASH3_IMAGE=completion-bash3
 
 echo;echo;
-DF=$(mktemp ./DF.XXXXX)
-
-echo "
-FROM bash:3.2
-RUN apk update && apk add ca-certificates
-# For bash 3.2, the bash-completion package required is version 1.3
-RUN mkdir /usr/share/bash-completion && \
-      wget -qO - https://github.com/scop/bash-completion/archive/1.3.tar.gz | \
-      tar xvz -C /usr/share/bash-completion --strip-components 1 bash-completion-1.3/bash_completion
-COPY ./ ${COMP_DIR}/
-" > $DF
-
-docker build -f $DF -t ${BASH3_IMAGE} ${COMP_DIR}
-rm -f $DF
+docker build -t ${BASH3_IMAGE} -f - ${COMP_DIR} <<- EOF
+   FROM bash:3.2
+   RUN apk update && apk add ca-certificates
+   # For bash 3.2, the bash-completion package required is version 1.3
+   RUN mkdir /usr/share/bash-completion && \
+       wget -qO - https://github.com/scop/bash-completion/archive/1.3.tar.gz | \
+            tar xvz -C /usr/share/bash-completion --strip-components 1 bash-completion-1.3/bash_completion
+   COPY ./ ${COMP_DIR}/
+EOF
 docker run --rm \
            -e BASH_COMPLETION=/usr/share/bash-completion \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
@@ -172,16 +163,11 @@ docker run --rm \
 BASH_IMAGE=completion-bash-centos
 
 echo;echo;
-DF=$(mktemp ./DF.XXXXX)
-
-echo "
-FROM centos
-RUN yum install -y bash-completion which
-COPY ./ ${COMP_DIR}/
-" > $DF
-
-docker build -f $DF -t ${BASH_IMAGE} ${COMP_DIR}
-rm -f $DF
+docker build -t ${BASH_IMAGE} -f - ${COMP_DIR} <<- EOF
+   FROM centos
+   RUN yum install -y bash-completion which
+   COPY ./ ${COMP_DIR}/
+EOF
 docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
@@ -195,17 +181,12 @@ docker run --rm \
 ZSH_IMAGE=completion-zsh
 
 echo;echo;
-DF=$(mktemp ./DF.XXXXX)
-
-echo "
-FROM zshusers/zsh:5.7
-# This will install the SSL certificates necessary for helm repo update to work
-RUN apt-get update && apt-get install -y wget
-COPY ./ ${COMP_DIR}/
-" > $DF
-
-docker build -f $DF -t ${ZSH_IMAGE} ${COMP_DIR}
-rm -f $DF
+docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
+   FROM zshusers/zsh:5.7
+   # This will install the SSL certificates necessary for helm repo update to work
+   RUN apt-get update && apt-get install -y wget
+   COPY ./ ${COMP_DIR}/
+EOF
 docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
@@ -220,16 +201,11 @@ docker run --rm \
 ZSH_IMAGE=completion-zsh-alpine
 
 echo;echo;
-DF=$(mktemp ./DF.XXXXX)
-
-echo "
-FROM alpine
-RUN apk update && apk add zsh ca-certificates
-COPY ./ ${COMP_DIR}/
-" > $DF
-
-docker build -f $DF -t ${ZSH_IMAGE} ${COMP_DIR}
-rm -f $DF
+docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
+   FROM alpine
+   RUN apk update && apk add zsh ca-certificates
+   COPY ./ ${COMP_DIR}/
+EOF
 docker run --rm \
            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \

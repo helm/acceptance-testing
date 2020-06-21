@@ -472,6 +472,22 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     \rm $tmpFiles
 fi
 
+# For completing the --version flag
+_completionTests_verifyCompletion "helm install name nginx/nginx --version " "0.11.0 0.12.0 0.13.0"
+_completionTests_verifyCompletion "helm install name nginx/nginx --version 0.11" "0.11.0"
+_completionTests_verifyCompletion "helm install nginx/nginx --generate-name --version " "0.11.0 0.12.0 0.13.0"
+_completionTests_verifyCompletion "helm install nginx/nginx --generate-name --version 0.13" "0.13.0"
+_completionTests_verifyCompletion "helm template name nginx/nginx --version 0.11" "0.11.0"
+_completionTests_verifyCompletion "helm template nginx/nginx --generate-name --version " "0.11.0 0.12.0 0.13.0"
+_completionTests_verifyCompletion "helm upgrade name nginx/nginx --version 0.11" "0.11.0"
+_completionTests_verifyCompletion "helm upgrade name nginx/nginx --version " "0.11.0 0.12.0 0.13.0"
+_completionTests_verifyCompletion "helm pull nginx/nginx --version " "0.11.0 0.12.0 0.13.0"
+_completionTests_verifyCompletion "helm pull nginx/nginx --version 0.11" "0.11.0"
+_completionTests_verifyCompletion "helm show all nginx/nginx --version " "0.11.0 0.12.0 0.13.0"
+_completionTests_verifyCompletion "helm show chart nginx/nginx --version 0.11" "0.11.0"
+_completionTests_verifyCompletion "helm show readme nginx/nginx --version 0.11" "0.11.0"
+_completionTests_verifyCompletion "helm show values nginx/nginx --version 0.11" "0.11.0"
+
 # Dynamic completion for plugins
 _completionTests_verifyCompletion "helm push " ""
 _completionTests_verifyCompletion "helm 2to3 move config g" "gryffindor"

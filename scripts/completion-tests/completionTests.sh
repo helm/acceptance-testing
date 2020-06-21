@@ -33,12 +33,14 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     export XDG_DATA_HOME=${COMP_DIR}/data && rm -rf ${XDG_DATA_HOME} && mkdir -p ${XDG_DATA_HOME}
 
     REPO_ROOT=${XDG_CONFIG_HOME}/helm
+    REPO_CACHE=${XDG_CACHE_HOME}/helm/repository
     PLUGIN_ROOT=${XDG_DATA_HOME}/helm/plugins
 else
     export HELM_HOME=${COMP_DIR}/.helm && rm -rf ${HELM_HOME} && mkdir -p ${HELM_HOME}
     helm init --client-only
 
     REPO_ROOT=${HELM_HOME}/repository
+    REPO_CACHE=${REPO_ROOT}/cache
     PLUGIN_ROOT=${HELM_HOME}/plugins
 fi
 
@@ -50,16 +52,43 @@ cat > ${REPO_ROOT}/repositories.yaml << EOF
 apiVersion: v1
 generated: "2019-08-11T22:28:44.841141-04:00"
 repositories:
-- name: stable
-  url: https://kubernetes-charts.storage.googleapis.com
+- name: nginx
+  url: https://nginx.example.com
 - name: zztest1
   url: https://charts.example.com
 - name: zztest2
   url: https://charts2.example.com
 EOF
 helm repo list
-# Fetch the details of the stable repo
-helm repo update
+# Create a some repo content to feed completions
+mkdir -p ${REPO_CACHE}
+
+# Repo index file
+cat > ${REPO_CACHE}/nginx-index.yaml << EOF
+apiVersion: v1
+entries:
+  nginx:
+  - name: nginx
+    version: 0.11.0
+  - name: nginx
+    version: 0.12.0
+  - name: nginx
+    version: 0.13.0
+  nginx-test:
+  - name: nginx-test
+    version: 1.1.1
+  - name: nginx-test
+    version: 2.2.2
+  - name: nginx-test
+    version: 3.3.3
+generated: "2020-06-18T04:08:38.041908903Z"
+EOF
+
+# Repo charts file
+cat > ${REPO_CACHE}/nginx-charts.yaml << EOF
+nginx
+nginx-test
+EOF
 
 # Setup some plugins to allow testing completion of the helm plugin command
 # We inject the content of different plugin.yaml files directly to avoid having
@@ -320,7 +349,7 @@ _completionTests_verifyCompletion "helm --namespace gascony test d" "dartagnan"
 _completionTests_verifyCompletion "helm rollback d" ""
 
 # For the repo command
-_completionTests_verifyCompletion "helm repo remove " "stable zztest1 zztest2"
+_completionTests_verifyCompletion "helm repo remove " "nginx zztest1 zztest2"
 _completionTests_verifyCompletion "helm repo remove zztest" "zztest1 zztest2"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Make sure completion works as expected when there are no repositories configured
@@ -410,35 +439,35 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     tmpFiles="zztest2file files"
     touch $tmpFiles
 
-    _completionTests_verifyCompletion "helm show values " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm show values " "./ / zztest1/ zztest2/ nginx/ file:// http:// https://"
     _completionTests_verifyCompletion "helm show values ht" "http:// https://"
     _completionTests_verifyCompletion "helm show values zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm show values zztest2" "zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm show values zztest2f" ""
-    _completionTests_verifyCompletion "helm show values stable/yyy" ""
-    _completionTests_verifyCompletion "helm show values stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm show values nginx/yyy" ""
+    _completionTests_verifyCompletion "helm show values nginx/n" "nginx/nginx nginx/nginx-test"
     _completionTests_verifyCompletion "helm show values fil" "file:// files"
 
     _completionTests_verifyCompletion "helm show chart zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm show readme zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm show values zz" "zztest1/ zztest2/ zztest2file"
 
-    _completionTests_verifyCompletion "helm pull " "zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm pull " "zztest1/ zztest2/ nginx/ file:// http:// https://"
     _completionTests_verifyCompletion "helm pull zz" "zztest1/ zztest2/"
 
-    _completionTests_verifyCompletion "helm install name " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm install name " "./ / zztest1/ zztest2/ nginx/ file:// http:// https://"
     _completionTests_verifyCompletion "helm install name zz" "zztest1/ zztest2/ zztest2file"
-    _completionTests_verifyCompletion "helm install name stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm install name nginx/n" "nginx/nginx nginx/nginx-test"
 
-    _completionTests_verifyCompletion "helm template name " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm template name " "./ / zztest1/ zztest2/ nginx/ file:// http:// https://"
     _completionTests_verifyCompletion "helm template name zz" "zztest1/ zztest2/ zztest2file"
-    _completionTests_verifyCompletion "helm template name stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm template name nginx/n" "nginx/nginx nginx/nginx-test"
 
-    _completionTests_verifyCompletion "helm upgrade release " "./ / zztest1/ zztest2/ stable/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm upgrade release " "./ / zztest1/ zztest2/ nginx/ file:// http:// https://"
     _completionTests_verifyCompletion "helm upgrade release zz" "zztest1/ zztest2/ zztest2file"
-    _completionTests_verifyCompletion "helm upgrade release stable/z" "stable/zeppelin stable/zetcd"
+    _completionTests_verifyCompletion "helm upgrade release nginx/n" "nginx/nginx nginx/nginx-test"
 
-    _completionTests_verifyCompletion "helm show values stab" "stable/ stable/."
+    _completionTests_verifyCompletion "helm show values ngin" "nginx/ nginx/."
 
     \rm $tmpFiles
 fi

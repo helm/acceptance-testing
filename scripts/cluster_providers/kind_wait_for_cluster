@@ -1,0 +1,20 @@
+#!/bin/bash
+
+kubectl config set-context kind-$1
+export STATUS=""
+while [ "${STATUS}" != "Ready" ]; do
+   sleep 10
+   export STATUS=$(kubectl get nodes | tail -n1 | awk '{print $2}')
+done
+
+NO_EXPECTED_PODS="8"
+NO_OF_PODS=""
+echo $NO_OF_PODS
+while [ "${NO_EXPECTED_PODS}" != "${NO_OF_PODS}" ]; do
+   if [ "${NO_EXPECTED_PODS}" != "${NO_OF_PODS}" ]
+   then
+        echo "All pods are up"
+        break
+   fi
+   sleep 10
+done

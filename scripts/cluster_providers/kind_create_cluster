@@ -1,0 +1,10 @@
+#!/bin/bash
+
+EXISTING_CLUSTER=KIND_$(echo $2 | sed -e "s/\./\_/g")
+eval var=${!EXISTING_CLUSTER}
+if [[ -z "${var}" ]]; then
+  kind create cluster --name $1 --image kindest/node:v$2
+else
+  echo $EXISTING_CLUSTER
+  echo "Not Creating cluster"
+fi

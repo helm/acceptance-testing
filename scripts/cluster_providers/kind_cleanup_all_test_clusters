@@ -1,0 +1,10 @@
+#!/bin/bash
+
+EXISTING_CLUSTER=KIND_$(echo $2 | sed -e "s/\./\_/g")
+eval var=${!EXISTING_CLUSTER}
+if [[ -z "${var}" ]]; then
+  for i in `kind get clusters | grep helm-acceptance-test`
+    do kind delete cluster --name $i || true; done
+else
+  echo "Not deleting cluster"
+fi

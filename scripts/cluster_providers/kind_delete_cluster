@@ -1,0 +1,9 @@
+#!/bin/bash
+
+EXISTING_CLUSTER=KIND_$(echo $2 | sed -e "s/\./\_/g")
+eval var=${!EXISTING_CLUSTER}
+if [[ -z "${var}" ]]; then
+  kind delete cluster --name=$1
+else
+  echo "Not deleting cluster $1 because it existed before running tests"
+fi

@@ -15,7 +15,7 @@
 
 import os
 import common
-from Kind import kind_auth_wrap
+from ClusterProvider import auth_wrap
 
 needs_cluster = False
 
@@ -30,7 +30,7 @@ class Sh(common.CommandRunner):
     def wrap(self, cmd):
         global needs_cluster
         if needs_cluster == True:
-            return kind_auth_wrap(cmd)
+            return auth_wrap(cmd)
         return cmd
 
     def Run(self, cmd):

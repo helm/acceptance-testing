@@ -59,7 +59,7 @@ Make sure both repos get updated
     Should pass  helm repo update
     Output contains  Successfully got an update from the "gitlab" chart repository
     Output contains  Successfully got an update from the "jfrog" chart repository
-    Output contains  Update Complete. ⎈ Happy Helming!⎈
+    Output contains  Update Complete. ⎈Happy Helming!⎈
 
 Try to remove nonexistent repo
     Check helm version
@@ -75,7 +75,7 @@ Make sure repo update will only update the remaining repo
     Check helm version
     Should pass  helm repo update
     Output contains  Successfully got an update from the "jfrog" chart repository
-    Output contains  Update Complete. ⎈ Happy Helming!⎈
+    Output contains  Update Complete. ⎈Happy Helming!⎈
 
 Try removing an already removed repo
     Check helm version

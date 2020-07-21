@@ -27,22 +27,27 @@ Documentation     Verify Helm functionality on multiple Kubernetes versions.
 ...
 Library           String
 Library           OperatingSystem
-Library           ../lib/Kind.py
+Library           ../lib/ClusterProvider.py
 Library           ../lib/Kubectl.py
 Library           ../lib/Helm.py
 Library           ../lib/Sh.py
 Suite Setup       Suite Setup
 Suite Teardown    Suite Teardown
 
+
 *** Test Cases ***
 #Helm works with Kubernetes 1.16.1
 #    Test Helm on Kubernetes version   1.16.1
 
-Helm works with Kubernetes 1.15.3
-    Test Helm on Kubernetes version   1.15.3
-
-Helm works with Kubernetes 1.14.6
-    Test Helm on Kubernetes version   1.14.6
+#Helm works with Kubernetes 1.15.3
+#    Test Helm on Kubernetes version   1.15.3
+#
+Helm works with Kubernetes
+    @{versions} =   Split String    %{CLUSTER_VERSIONS}    ,
+    FOR    ${i}    IN    @{versions}
+        Set Global Variable     ${version}    ${i}
+        Test Helm on Kubernetes version   ${version}
+    END
 
 *** Keyword ***
 Test Helm on Kubernetes version
@@ -57,12 +62,12 @@ Test Helm on Kubernetes version
     # Add new test cases here
     Verify --wait flag works as expected
 
-    Kind.Delete test cluster
+    ClusterProvider.Delete test cluster
 
 Create test cluster with kube version
     [Arguments]    ${kube_version}
-    Kind.Create test cluster with Kubernetes version  ${kube_version}
-    Kind.Wait for cluster
+    ClusterProvider.Create test cluster with Kubernetes version  ${kube_version}
+    ClusterProvider.Wait for cluster
     Should pass  kubectl get nodes
     Should pass  kubectl get pods --namespace=kube-system
 
@@ -131,7 +136,7 @@ Verify --wait flag works as expected
     Should pass  helm delete wait-flag-bad
 
 Suite Setup
-    Kind.Cleanup all test clusters
+    ClusterProvider.Cleanup all test clusters
 
 Suite Teardown
-    Kind.Cleanup all test clusters
+    ClusterProvider.Cleanup all test clusters

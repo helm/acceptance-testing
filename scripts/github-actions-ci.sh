@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export KUBECTL_VERSION="v1.16.1"
-export KIND_VERSION="v0.5.1"
+export KUBECTL_VERSION="v1.18.2"
+export KIND_VERSION="v0.8.1"
 
 rm -rf bin/
 mkdir -p bin/
@@ -78,5 +78,7 @@ rm -rf ${ROBOT_OUTPUT_DIR}
 mkdir -p ${ROBOT_OUTPUT_DIR}
 trap "rm -rf ${ROBOT_OUTPUT_DIR}/.venv/" EXIT
 
+export CLUSTER_VERSIONS=1.15.3
+export CLUSTER_PROVIDER=kind
 # Run
 make acceptance

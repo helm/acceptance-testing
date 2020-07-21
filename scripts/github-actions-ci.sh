@@ -78,7 +78,7 @@ rm -rf ${ROBOT_OUTPUT_DIR}
 mkdir -p ${ROBOT_OUTPUT_DIR}
 trap "rm -rf ${ROBOT_OUTPUT_DIR}/.venv/" EXIT
 
-export CLUSTER_VERSIONS=1.14.6,1.15.3
+export CLUSTER_VERSIONS=1.15.3
 export CLUSTER_PROVIDER=kind
 # Run
 make acceptance

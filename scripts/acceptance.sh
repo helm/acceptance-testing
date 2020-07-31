@@ -76,6 +76,8 @@ echo "ROBOT_VENV_DIR    - The directory to be used for virtualenv."
 echo "                    Current: ${ROBOT_VENV_DIR}"
 echo "ROBOT_PY_REQUIRES - Space-separated list of python packages to install (including the robot framework)."
 echo "                    Current: ${ROBOT_PY_REQUIRES}"
+echo "ROBOT_OPTS        - Additional robot cli parameters."
+echo "                    Current: ${ROBOT_OPTS}"
 echo "=============================================================================="
 set_shell_debug_level 2
 
@@ -135,4 +137,4 @@ if [[ ! -d ${ROBOT_VENV_DIR} ]]; then
 fi
 
 # Run Robot Framework, output
-robot --outputdir=${ROBOT_OUTPUT_DIR} ${SUITES_TO_RUN}
+robot --outputdir=${ROBOT_OUTPUT_DIR} ${ROBOT_OPTS} ${SUITES_TO_RUN}

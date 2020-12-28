@@ -198,44 +198,47 @@ EOF
               -e KUBECONFIG=${KUBECONFIG} \
               ${BASH_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
-   ########################################
-   # Zsh completion tests
-   ########################################
-   ZSH_IMAGE=completion-zsh
-
-   echo;echo;
-   docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
-      FROM zshusers/zsh:5.7
-      # This will install the SSL certificates necessary for helm repo update to work
-      RUN apt-get update && apt-get install -y wget
-      COPY ./ ${COMP_DIR}/
-EOF
-   docker run --rm \
-              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-              -e COMP_DIR=${COMP_DIR} \
-              -e KUBECONFIG=${KUBECONFIG} \
-              ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
-
-   ########################################
-   # Zsh alpine/busybox completion tests
-   # https://github.com/helm/helm/pull/6327
-   ########################################
-   ZSH_IMAGE=completion-zsh-alpine
-
-   echo;echo;
-   docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
-      FROM alpine
-      RUN apk update && apk add zsh ca-certificates
-      COPY ./ ${COMP_DIR}/
-EOF
-   docker run --rm \
-              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-              -e COMP_DIR=${COMP_DIR} \
-              -e KUBECONFIG=${KUBECONFIG} \
-              ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
-
+# Zsh completion tests no longer work now that helm
+# has moved to native zsh completion
+#
+#   ########################################
+#   # Zsh completion tests
+#   ########################################
+#   ZSH_IMAGE=completion-zsh
+#
+#   echo;echo;
+#   docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
+#      FROM zshusers/zsh:5.7
+#      # This will install the SSL certificates necessary for helm repo update to work
+#      RUN apt-get update && apt-get install -y wget
+#      COPY ./ ${COMP_DIR}/
+#EOF
+#   docker run --rm \
+#              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+#              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+#              -e COMP_DIR=${COMP_DIR} \
+#              -e KUBECONFIG=${KUBECONFIG} \
+#              ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
+#
+#   ########################################
+#   # Zsh alpine/busybox completion tests
+#   # https://github.com/helm/helm/pull/6327
+#   ########################################
+#   ZSH_IMAGE=completion-zsh-alpine
+#
+#   echo;echo;
+#   docker build -t ${ZSH_IMAGE} -f - ${COMP_DIR} <<- EOF
+#      FROM alpine
+#      RUN apk update && apk add zsh ca-certificates
+#      COPY ./ ${COMP_DIR}/
+#EOF
+#   docker run --rm \
+#              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
+#              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
+#              -e COMP_DIR=${COMP_DIR} \
+#              -e KUBECONFIG=${KUBECONFIG} \
+#              ${ZSH_IMAGE} zsh -c "source ${COMP_SCRIPT}"
+#
 fi
 
 ########################################
@@ -261,11 +264,14 @@ if [ "$(uname)" == "Darwin" ]; then
       bash -c "source ${COMP_SCRIPT}"
    fi
 
-   if which zsh>/dev/null; then
-      echo;echo;
-      echo "Completion tests for zsh running locally"
-      zsh -c "source ${COMP_SCRIPT}"
-   fi
+# Zsh completion tests no longer work now that helm
+# has moved to native zsh completion
+#
+#   if which zsh>/dev/null; then
+#      echo;echo;
+#      echo "Completion tests for zsh running locally"
+#      zsh -c "source ${COMP_SCRIPT}"
+#   fi
 fi
 
 # Indicate if anything failed during the run

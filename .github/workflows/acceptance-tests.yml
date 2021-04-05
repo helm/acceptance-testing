@@ -3,7 +3,7 @@ name: acceptance-tests
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   run:
     runs-on: ubuntu-latest

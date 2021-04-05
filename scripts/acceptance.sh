@@ -136,5 +136,10 @@ if [[ ! -d ${ROBOT_VENV_DIR} ]]; then
     pip install ${ROBOT_PY_REQUIRES}
 fi
 
+if [ -n "$ROBOT_DEBUG_COMPLETION" ]; then
+    scripts/completion-tests/test-completion.sh
+    exit
+fi
+
 # Run Robot Framework, output
 robot --outputdir=${ROBOT_OUTPUT_DIR} ${ROBOT_OPTS} ${SUITES_TO_RUN}

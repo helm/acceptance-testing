@@ -1,17 +1,18 @@
-SHELL = /bin/bash
+SHELL    = /bin/bash
+ROOT_DIR = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 .PHONY: acceptance
 acceptance:
-	@scripts/acceptance.sh
+	@$(ROOT_DIR)/scripts/acceptance.sh
 
 .PHONY: github-actions-ci
 github-actions-ci:
-	@scripts/github-actions-ci.sh
+	@$(ROOT_DIR)/scripts/github-actions-ci.sh
 
 .PHONY: github-actions-ci-local
 github-actions-ci-local:
 	docker run -it --rm \
-	    -v $(shell pwd):/tmp/acceptance-testing \
+	    -v $(ROOT_DIR):/tmp/acceptance-testing \
 	    -w /tmp/acceptance-testing  \
 	    --privileged -v /var/run/docker.sock:/var/run/docker.sock \
 	    --entrypoint=/bin/bash ubuntu:latest \

@@ -242,7 +242,7 @@ else
     _completionTests_verifyCompletion "helm get " "all hooks manifest notes values"
 fi
 _completionTests_verifyCompletion "helm get h" "hooks"
-_completionTests_verifyCompletion "helm completion " "bash fish zsh"
+_completionTests_verifyCompletion "helm completion " "bash fish powershell zsh"
 _completionTests_verifyCompletion "helm completion z" "zsh"
 _completionTests_verifyCompletion "helm plugin " "install list uninstall update"
 _completionTests_verifyCompletion "helm plugin u" "uninstall update"
@@ -260,13 +260,13 @@ _completionTests_verifyCompletion "helm plugin --namespace ns " "install list un
 _completionTests_verifyCompletion "helm plugin --namespace ns u" "uninstall update"
 
 # With validArgs
-_completionTests_verifyCompletion "helm completion " "bash fish zsh"
+_completionTests_verifyCompletion "helm completion " "bash fish powershell zsh"
 _completionTests_verifyCompletion "helm completion z" "zsh"
-_completionTests_verifyCompletion "helm --debug completion " "bash fish zsh"
+_completionTests_verifyCompletion "helm --debug completion " "bash fish powershell zsh"
 _completionTests_verifyCompletion "helm --debug completion z" "zsh"
-_completionTests_verifyCompletion "helm -n ns completion " "bash fish zsh"
+_completionTests_verifyCompletion "helm -n ns completion " "bash fish powershell zsh"
 _completionTests_verifyCompletion "helm -n ns completion z" "zsh"
-_completionTests_verifyCompletion "helm --namespace ns completion " "bash fish zsh"
+_completionTests_verifyCompletion "helm --namespace ns completion " "bash fish powershell zsh"
 _completionTests_verifyCompletion "helm --namespace ns completion z" "zsh"
 
 # Completion of flags

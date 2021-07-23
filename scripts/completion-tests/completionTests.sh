@@ -153,13 +153,17 @@ fi
 
 if [ "\$2" = -s ]; then
     echo "case-flag"
-    echo "lucius draco dobby"
+    echo "lucius"
+    echo "draco"
+    echo "dobby"
     echo ":4"
     exit
 fi
 
 # Check missing directive
-echo "hermione harry ron"
+echo "hermione"
+echo "harry"
+echo "ron"
 EOF
 chmod u+x ${PLUGIN_DIR}/plugin.complete
 
@@ -198,8 +202,8 @@ EOF
 
 allHelmCommands="completion create dependency env 2to3 help get history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
 if [ "$SHELL_TYPE" = bash ]; then
-    allHelmGlobalFlags="--debug --kube-apiserver --kube-apiserver= --kube-as-group --kube-as-group= --kube-as-user --kube-as-user= --kube-ca-file --kube-ca-file= --kube-context --kube-context= --kube-token --kube-token= --kubeconfig --kubeconfig= --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config= -n"
-    allHelmLongFlags="--debug --kube-apiserver --kube-apiserver= --kube-as-group --kube-as-group= --kube-as-user --kube-as-user= --kube-ca-file --kube-ca-file= --kube-context --kube-context= --kube-token --kube-token= --kubeconfig --kubeconfig= --namespace --namespace= --registry-config --registry-config= --repository-cache --repository-cache= --repository-config --repository-config="
+    allHelmLongFlags="--debug --kube-apiserver --kube-as-group --kube-as-user --kube-ca-file --kube-context --kube-token --kubeconfig --namespace --registry-config --repository-cache --repository-config"
+    allHelmGlobalFlags="${allHelmLongFlags} -n"
 else
     allHelmGlobalFlags="--debug --kube-apiserver --kube-apiserver --kube-apiserver --kube-context --kube-context --kube-context --kube-token --kube-token --kube-token --kubeconfig --kubeconfig --kubeconfig --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config -n"
     allHelmLongFlags="--debug --kube-apiserver --kube-apiserver --kube-apiserver --kube-context --kube-context --kube-context --kube-token --kube-token --kube-token --kubeconfig --kubeconfig --kubeconfig --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config "
@@ -267,8 +271,8 @@ _completionTests_verifyCompletion "helm --namespace ns completion z" "zsh"
 
 # Completion of flags
 if [ "$SHELL_TYPE" = bash ]; then
-    _completionTests_verifyCompletion "helm --kube-con" "--kube-context= --kube-context"
-    _completionTests_verifyCompletion "helm --kubecon" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "helm --kube-con" "--kube-context"
+    _completionTests_verifyCompletion "helm --kubecon" "--kubeconfig"
 else
     _completionTests_verifyCompletion "helm --kube-con" "--kube-context --kube-context --kube-context"
     _completionTests_verifyCompletion "helm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
@@ -276,7 +280,7 @@ fi
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm -n" "-n"
     if [ "$SHELL_TYPE" = bash ]; then
-        _completionTests_verifyCompletion "helm --name" "--namespace= --namespace"
+        _completionTests_verifyCompletion "helm --name" "--namespace"
     else
         _completionTests_verifyCompletion "helm --name" "--namespace --namespace --namespace"
     fi
@@ -294,7 +298,7 @@ _completionTests_verifyCompletion "helm show -n" "-n"
 _completionTests_verifyCompletion "helm --kube-context prod sta" "status"
 _completionTests_verifyCompletion "helm --kubeconfig=/tmp/config lis" "list"
 if [ "$SHELL_TYPE" = bash ]; then
-    _completionTests_verifyCompletion "helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "helm get hooks --kubec" "--kubeconfig"
 else
     _completionTests_verifyCompletion "helm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
 fi
@@ -302,7 +306,7 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm --namespace mynamespace get h" "hooks"
     _completionTests_verifyCompletion "helm -n mynamespace get " "all hooks manifest notes values"
     if [ "$SHELL_TYPE" = bash ]; then
-        _completionTests_verifyCompletion "helm get --name" "--namespace= --namespace"
+        _completionTests_verifyCompletion "helm get --name" "--namespace"
     else
         _completionTests_verifyCompletion "helm get --name" "--namespace --namespace --namespace"
     fi
@@ -525,8 +529,8 @@ if [ "$SHELL_TYPE" = bash ]; then
     # Completion with normal alias
     _completionTests_verifyCompletion "helmAlias lis" "list"
     _completionTests_verifyCompletion "helmAlias completion z" "zsh"
-    _completionTests_verifyCompletion "helmAlias --kubecon" "--kubeconfig= --kubeconfig"
-    _completionTests_verifyCompletion "helmAlias get hooks --kubec" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "helmAlias --kubecon" "--kubeconfig"
+    _completionTests_verifyCompletion "helmAlias get hooks --kubec" "--kubeconfig"
     _completionTests_verifyCompletion "helmAlias repo remove zztest" "zztest1 zztest2"
     _completionTests_verifyCompletion "helmAlias plugin update pus" "push push-artifactory"
     _completionTests_verifyCompletion "helmAlias upgrade --kube-context d" "dev1 dev2"
@@ -537,8 +541,8 @@ if [ "$SHELL_TYPE" = bash ]; then
     # Completion with alias that contains a variable
     _completionTests_verifyCompletion "helmAliasWithVar lis" "list"
     _completionTests_verifyCompletion "helmAliasWithVar completion z" "zsh"
-    _completionTests_verifyCompletion "helmAliasWithVar --kubecon" "--kubeconfig= --kubeconfig"
-    _completionTests_verifyCompletion "helmAliasWithVar get hooks --kubec" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "helmAliasWithVar --kubecon" "--kubeconfig"
+    _completionTests_verifyCompletion "helmAliasWithVar get hooks --kubec" "--kubeconfig"
     _completionTests_verifyCompletion "helmAliasWithVar repo remove zztest" "zztest1 zztest2"
     _completionTests_verifyCompletion "helmAliasWithVar plugin update pus" "push push-artifactory"
     _completionTests_verifyCompletion "helmAliasWithVar upgrade --kube-context d" "dev1 dev2"
@@ -557,8 +561,8 @@ _completionTests_verifyCompletion "$TMP_HELM_DIR/helm upgrade --kube-context d" 
 #     _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 # fi
 if [ "$SHELL_TYPE" = bash ]; then
-    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig= --kubeconfig"
-    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig"
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig"
 else
     _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
     _completionTests_verifyCompletion "$TMP_HELM_DIR/helm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
@@ -575,8 +579,8 @@ _completionTests_verifyCompletion "./helm upgrade --kube-context d" "dev1 dev2"
 #     _completionTests_verifyCompletion "./helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 # fi
 if [ "$SHELL_TYPE" = bash ]; then
-    _completionTests_verifyCompletion "./helm --kubecon" "--kubeconfig= --kubeconfig"
-    _completionTests_verifyCompletion "./helm get hooks --kubec" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "./helm --kubecon" "--kubeconfig"
+    _completionTests_verifyCompletion "./helm get hooks --kubec" "--kubeconfig"
 else
     _completionTests_verifyCompletion "./helm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
     _completionTests_verifyCompletion "./helm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
@@ -600,8 +604,8 @@ _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm upgrade --kube-context d
 #     _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 # fi
 if [ "$SHELL_TYPE" = bash ]; then
-    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig= --kubeconfig"
-    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig"
+    _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig"
 else
     _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
     _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"
@@ -618,8 +622,8 @@ _completionTests_verifyCompletion "myhelm upgrade --kube-context d" "dev1 dev2"
 #     _completionTests_verifyCompletion "myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
 # fi
 if [ "$SHELL_TYPE" = bash ]; then
-    _completionTests_verifyCompletion "myhelm --kubecon" "--kubeconfig= --kubeconfig"
-    _completionTests_verifyCompletion "myhelm get hooks --kubec" "--kubeconfig= --kubeconfig"
+    _completionTests_verifyCompletion "myhelm --kubecon" "--kubeconfig"
+    _completionTests_verifyCompletion "myhelm get hooks --kubec" "--kubeconfig"
 else
     _completionTests_verifyCompletion "myhelm --kubecon" "--kubeconfig --kubeconfig --kubeconfig"
     _completionTests_verifyCompletion "myhelm get hooks --kubec" "--kubeconfig --kubeconfig --kubeconfig"

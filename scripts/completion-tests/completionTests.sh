@@ -170,13 +170,13 @@ chmod u+x ${PLUGIN_DIR}/plugin.complete
 ###########
 # Plugin 2
 ###########
-PLUGIN_DIR=${PLUGIN_ROOT}/helm-push
+PLUGIN_DIR=${PLUGIN_ROOT}/helm-push-plugin
 mkdir -p ${PLUGIN_DIR}
 # The plugin file
 cat > ${PLUGIN_DIR}/plugin.yaml << EOF
-name: "push"
+name: "push-plugin"
 version: "0.7.1"
-description: "Push chart package to ChartMuseum"
+description: "Some plugin description"
 EOF
 
 ###########
@@ -200,7 +200,7 @@ source /dev/stdin <<- EOF
    $(helm completion $SHELL_TYPE)
 EOF
 
-allHelmCommands="completion create dependency env 2to3 help get history install lint list package plugin pull push push-artifactory repo rollback search show status template test uninstall upgrade verify version"
+allHelmCommands="completion create dependency env 2to3 help get history install lint list package plugin pull push push-artifactory push-plugin registry repo rollback search show status template test uninstall upgrade verify version"
 if [ "$SHELL_TYPE" = bash ]; then
     allHelmLongFlags="--debug --kube-apiserver --kube-as-group --kube-as-user --kube-ca-file --kube-context --kube-token --kubeconfig --namespace --registry-config --repository-cache --repository-config"
     allHelmGlobalFlags="${allHelmLongFlags} -n"
@@ -228,10 +228,10 @@ _completionTests_verifyCompletion "helm stat" "status"
 _completionTests_verifyCompletion "helm status" "status"
 _completionTests_verifyCompletion "helm lis" "list"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
-    _completionTests_verifyCompletion "helm r" "repo rollback"
-    _completionTests_verifyCompletion "helm re" "repo"
+    _completionTests_verifyCompletion "helm r" "registry repo rollback"
+    _completionTests_verifyCompletion "helm re" "registry repo"
 else
-    _completionTests_verifyCompletion "helm r" "repo reset rollback"
+    _completionTests_verifyCompletion "helm r" "registry repo reset rollback"
     _completionTests_verifyCompletion "helm re" "repo reset"
 fi
 
@@ -317,7 +317,7 @@ _completionTests_verifyCompletion "helm ls" ""
 _completionTests_verifyCompletion "helm dependenci" ""
 
 # Static completion for plugins
-_completionTests_verifyCompletion "helm push " ""
+_completionTests_verifyCompletion "helm push-plugin " ""
 _completionTests_verifyCompletion "helm 2to3 " "cleanup convert move"
 _completionTests_verifyCompletion "helm 2to3 c" "cleanup convert"
 _completionTests_verifyCompletion "helm 2to3 move " "config"
@@ -353,10 +353,10 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
 fi
 
 # For the plugin command
-_completionTests_verifyCompletion "helm plugin uninstall " "2to3 push push-artifactory"
-_completionTests_verifyCompletion "helm plugin uninstall pu" "push push-artifactory"
-_completionTests_verifyCompletion "helm plugin update " "2to3 push push-artifactory"
-_completionTests_verifyCompletion "helm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "helm plugin uninstall " "2to3 push-artifactory push-plugin"
+_completionTests_verifyCompletion "helm plugin uninstall pu" "push-artifactory push-plugin"
+_completionTests_verifyCompletion "helm plugin update " "2to3 push-artifactory push-plugin"
+_completionTests_verifyCompletion "helm plugin update pus" "push-artifactory push-plugin"
 if [ ! -z ${ROBOT_HELM_V3} ]; then
     # Make sure completion works as expected when there are no plugins
     tmp=$XDG_DATA_HOME
@@ -483,7 +483,7 @@ _completionTests_verifyCompletion "helm show readme nginx/nginx --version 0.11" 
 _completionTests_verifyCompletion "helm show values nginx/nginx --version 0.11" "0.11.0"
 
 # Dynamic completion for plugins
-_completionTests_verifyCompletion "helm push " ""
+_completionTests_verifyCompletion "helm push-plugin " ""
 _completionTests_verifyCompletion "helm 2to3 move config g" "gryffindor"
 _completionTests_verifyCompletion "helm 2to3 -n dumbledore convert " "case-ns convert dumbledore"
 _completionTests_verifyCompletion "helm 2to3 convert -s flag d" "dobby draco"
@@ -532,7 +532,7 @@ if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "helmAlias --kubecon" "--kubeconfig"
     _completionTests_verifyCompletion "helmAlias get hooks --kubec" "--kubeconfig"
     _completionTests_verifyCompletion "helmAlias repo remove zztest" "zztest1 zztest2"
-    _completionTests_verifyCompletion "helmAlias plugin update pus" "push push-artifactory"
+    _completionTests_verifyCompletion "helmAlias plugin update pus" "push-plugin push-artifactory"
     _completionTests_verifyCompletion "helmAlias upgrade --kube-context d" "dev1 dev2"
     # if [ ! -z ${ROBOT_HELM_V3} ]; then
     #     _completionTests_verifyCompletion "helmAlias --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
@@ -544,7 +544,7 @@ if [ "$SHELL_TYPE" = bash ]; then
     _completionTests_verifyCompletion "helmAliasWithVar --kubecon" "--kubeconfig"
     _completionTests_verifyCompletion "helmAliasWithVar get hooks --kubec" "--kubeconfig"
     _completionTests_verifyCompletion "helmAliasWithVar repo remove zztest" "zztest1 zztest2"
-    _completionTests_verifyCompletion "helmAliasWithVar plugin update pus" "push push-artifactory"
+    _completionTests_verifyCompletion "helmAliasWithVar plugin update pus" "push-plugin push-artifactory"
     _completionTests_verifyCompletion "helmAliasWithVar upgrade --kube-context d" "dev1 dev2"
     # if [ ! -z ${ROBOT_HELM_V3} ]; then
     #     _completionTests_verifyCompletion "helmAliasWithVar --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
@@ -555,7 +555,7 @@ fi
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm lis" "list"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm completion z" "zsh"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm repo remove zztest" "zztest1 zztest2"
-_completionTests_verifyCompletion "$TMP_HELM_DIR/helm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/helm plugin update pus" "push-plugin push-artifactory"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/helm upgrade --kube-context d" "dev1 dev2"
 # if [ ! -z ${ROBOT_HELM_V3} ]; then
 #     _completionTests_verifyCompletion "$TMP_HELM_DIR/helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
@@ -573,7 +573,7 @@ cd $TMP_HELM_DIR
 _completionTests_verifyCompletion "./helm lis" "list"
 _completionTests_verifyCompletion "./helm completion z" "zsh"
 _completionTests_verifyCompletion "./helm repo remove zztest" "zztest1 zztest2"
-_completionTests_verifyCompletion "./helm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "./helm plugin update pus" "push-plugin push-artifactory"
 _completionTests_verifyCompletion "./helm upgrade --kube-context d" "dev1 dev2"
 # if [ ! -z ${ROBOT_HELM_V3} ]; then
 #     _completionTests_verifyCompletion "./helm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
@@ -598,7 +598,7 @@ EOF
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm lis" "list"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm completion z" "zsh"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm repo remove zztest" "zztest1 zztest2"
-_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm plugin update pus" "push-plugin push-artifactory"
 _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm upgrade --kube-context d" "dev1 dev2"
 # if [ ! -z ${ROBOT_HELM_V3} ]; then
 #     _completionTests_verifyCompletion "$TMP_HELM_DIR/myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"
@@ -616,7 +616,7 @@ mv $TMP_HELM_DIR/myhelm $HELM_DIR/myhelm
 _completionTests_verifyCompletion "myhelm lis" "list"
 _completionTests_verifyCompletion "myhelm completion z" "zsh"
 _completionTests_verifyCompletion "myhelm repo remove zztest" "zztest1 zztest2"
-_completionTests_verifyCompletion "myhelm plugin update pus" "push push-artifactory"
+_completionTests_verifyCompletion "myhelm plugin update pus" "push-plugin push-artifactory"
 _completionTests_verifyCompletion "myhelm upgrade --kube-context d" "dev1 dev2"
 # if [ ! -z ${ROBOT_HELM_V3} ]; then
 #     _completionTests_verifyCompletion "myhelm --kube-context=mycontext --namespace " "braavos old-valyria yunkai"

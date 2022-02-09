@@ -179,25 +179,6 @@ EOF
               -e KUBECONFIG=${KUBECONFIG} \
               ${BASH3_IMAGE} bash -c "source ${COMP_SCRIPT}"
 
-   ########################################
-   # Bash centos completion tests
-   # https://github.com/helm/helm/pull/7304
-   ########################################
-   BASH_IMAGE=completion-bash-centos
-
-   echo;echo;
-   docker build -t ${BASH_IMAGE} -f - ${COMP_DIR} <<- EOF
-      FROM centos
-      RUN yum install -y bash-completion which
-      COPY ./ ${COMP_DIR}/
-EOF
-   docker run --rm \
-              -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-              -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-              -e COMP_DIR=${COMP_DIR} \
-              -e KUBECONFIG=${KUBECONFIG} \
-              ${BASH_IMAGE} bash -c "source ${COMP_SCRIPT}"
-
 # Zsh completion tests no longer work now that helm
 # has moved to native zsh completion
 #

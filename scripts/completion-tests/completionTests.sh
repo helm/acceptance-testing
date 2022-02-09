@@ -433,7 +433,7 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     tmpFiles="zztest2file files"
     touch $tmpFiles
 
-    _completionTests_verifyCompletion "helm show values " "./ / zztest1/ zztest2/ nginx/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm show values " "./ / zztest1/ zztest2/ nginx/ oci:// file:// http:// https://"
     _completionTests_verifyCompletion "helm show values ht" "http:// https://"
     _completionTests_verifyCompletion "helm show values zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm show values zztest2" "zztest2/ zztest2file"
@@ -446,18 +446,18 @@ if [ ! -z ${ROBOT_HELM_V3} ]; then
     _completionTests_verifyCompletion "helm show readme zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm show values zz" "zztest1/ zztest2/ zztest2file"
 
-    _completionTests_verifyCompletion "helm pull " "zztest1/ zztest2/ nginx/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm pull " "zztest1/ zztest2/ nginx/ oci:// file:// http:// https://"
     _completionTests_verifyCompletion "helm pull zz" "zztest1/ zztest2/"
 
-    _completionTests_verifyCompletion "helm install name " "./ / zztest1/ zztest2/ nginx/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm install name " "./ / zztest1/ zztest2/ nginx/ oci:// file:// http:// https://"
     _completionTests_verifyCompletion "helm install name zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm install name nginx/n" "nginx/nginx nginx/nginx-test"
 
-    _completionTests_verifyCompletion "helm template name " "./ / zztest1/ zztest2/ nginx/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm template name " "./ / zztest1/ zztest2/ nginx/ oci:// file:// http:// https://"
     _completionTests_verifyCompletion "helm template name zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm template name nginx/n" "nginx/nginx nginx/nginx-test"
 
-    _completionTests_verifyCompletion "helm upgrade release " "./ / zztest1/ zztest2/ nginx/ file:// http:// https://"
+    _completionTests_verifyCompletion "helm upgrade release " "./ / zztest1/ zztest2/ nginx/ oci:// file:// http:// https://"
     _completionTests_verifyCompletion "helm upgrade release zz" "zztest1/ zztest2/ zztest2file"
     _completionTests_verifyCompletion "helm upgrade release nginx/n" "nginx/nginx nginx/nginx-test"
 

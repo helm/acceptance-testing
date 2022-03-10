@@ -24,5 +24,5 @@ Documentation     Verify Helm functionality on multiple shells.
 Library           ../lib/Completion.py
 
 *** Test Cases ***
-Helm shell completion works
+[HELM-016] Helm shell completion works
     Completion.Run all completion tests

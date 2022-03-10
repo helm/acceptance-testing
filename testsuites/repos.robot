@@ -20,32 +20,32 @@ Library           OperatingSystem
 Library           ../lib/Sh.py
 
 *** Test Cases ***
-No repos provisioned yet
+[HELM-002] No repos provisioned yet
     Check helm version
     Should fail  helm repo list
     Output contains  Error: no repositories
 
-Add a first valid repo
+[HELM-003] Add a first valid repo
     Check helm version
     Should pass  helm repo add gitlab https://charts.gitlab.io
     Output contains  "gitlab" has been added to your repositories
 
-Add invalid repo without protocol
+[HELM-004] Add invalid repo without protocol
     Check helm version
     Should fail  helm repo add invalid notAValidURL
     Output contains  Error: could not find protocol handler
 
-Add invalid repo with protocol
+[HELM-005] Add invalid repo with protocol
     Check helm version
     Should fail  helm repo add invalid https://example.com
     Output contains  Error: looks like "https://example.com" is not a valid chart repository or cannot be reached
 
-Add a second valid repo
+[HELM-006] Add a second valid repo
     Check helm version
     Should pass  helm repo add jfrog https://charts.jfrog.io
     Output contains  "jfrog" has been added to your repositories
 
-Check output of repo list
+[HELM-007] Check output of repo list
     Check helm version
     Should pass  helm repo list
     Output contains  gitlab
@@ -54,45 +54,45 @@ Check output of repo list
     Output contains  https://charts.jfrog.io
     Output does not contain  invalid
 
-Make sure both repos get updated
+[HELM-008] Make sure both repos get updated
     Check helm version
     Should pass  helm repo update
     Output contains  Successfully got an update from the "gitlab" chart repository
     Output contains  Successfully got an update from the "jfrog" chart repository
     Output contains  Update Complete. ⎈Happy Helming!⎈
 
-Try to remove nonexistent repo
+[HELM-009] Try to remove nonexistent repo
     Check helm version
     Should fail  helm repo remove badname
     Output contains  Error: no repo named "badname" found
 
-Remove a repo
+[HELM-010] Remove a repo
     Check helm version
     Should pass  helm repo remove gitlab
     Output contains  "gitlab" has been removed from your repositories
 
-Make sure repo update will only update the remaining repo
+[HELM-011] Make sure repo update will only update the remaining repo
     Check helm version
     Should pass  helm repo update
     Output contains  Successfully got an update from the "jfrog" chart repository
     Output contains  Update Complete. ⎈Happy Helming!⎈
 
-Try removing an already removed repo
+[HELM-012] Try removing an already removed repo
     Check helm version
     Should fail  helm repo remove gitlab
     Output contains  Error: no repo named "gitlab" found
 
-Remove last repo
+[HELM-013] Remove last repo
     Check helm version
     Should pass  helm repo remove jfrog
     Output contains  "jfrog" has been removed from your repositories
 
-Check there are no more repos
+[HELM-014] Check there are no more repos
     Check helm version
     Should fail  helm repo list
     Output contains  Error: no repositories to show
 
-Make sure repo update now fails, with a proper message
+[HELM-015] Make sure repo update now fails, with a proper message
     Check helm version
     Should fail  helm repo update
     Output contains  Error: no repositories found. You must add one before updating

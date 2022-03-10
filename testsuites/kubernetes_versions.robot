@@ -42,7 +42,7 @@ Suite Teardown    Suite Teardown
 #Helm works with Kubernetes 1.15.3
 #    Test Helm on Kubernetes version   1.15.3
 #
-Helm works with Kubernetes
+[HELM-001] Helm works with Kubernetes
     @{versions} =   Split String    %{CLUSTER_VERSIONS}    ,
     FOR    ${i}    IN    @{versions}
         Set Global Variable     ${version}    ${i}

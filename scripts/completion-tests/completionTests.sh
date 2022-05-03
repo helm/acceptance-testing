@@ -136,7 +136,10 @@ cat > ${PLUGIN_DIR}/plugin.complete << EOF
 
 if [ "\$2" = "config" ]; then
     echo "case-config"
-    echo "gryffindor slytherin ravenclaw hufflepuff"
+    echo "gryffindor"
+    echo "slytherin"
+    echo "ravenclaw"
+    echo "hufflepuff"
     echo ":0"
     exit
 fi

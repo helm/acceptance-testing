@@ -205,7 +205,7 @@ EOF
 
 allHelmCommands="completion create dependency env 2to3 help get history install lint list package plugin pull push push-artifactory push-plugin registry repo rollback search show status template test uninstall upgrade verify version"
 if [ "$SHELL_TYPE" = bash ]; then
-    allHelmLongFlags="--debug --kube-apiserver --kube-as-group --kube-as-user --kube-ca-file --kube-context --kube-token --kubeconfig --namespace --registry-config --repository-cache --repository-config"
+    allHelmLongFlags="--burst-limit --debug --kube-apiserver --kube-as-group --kube-as-user --kube-ca-file --kube-context --kube-token --kubeconfig --namespace --registry-config --repository-cache --repository-config"
     allHelmGlobalFlags="${allHelmLongFlags} -n"
 else
     allHelmGlobalFlags="--debug --kube-apiserver --kube-apiserver --kube-apiserver --kube-context --kube-context --kube-context --kube-token --kube-token --kube-token --kubeconfig --kubeconfig --kubeconfig --namespace --namespace --namespace --registry-config --registry-config --registry-config --repository-cache --repository-cache --repository-cache --repository-config --repository-config --repository-config -n"
